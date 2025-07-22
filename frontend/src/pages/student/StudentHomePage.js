@@ -10,23 +10,29 @@ import CountUp from 'react-countup';
 import Subject from "../../assets/subjects.svg";
 import Assignment from "../../assets/assignment.svg";
 import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
+import { fetchAssignments } from '../../redux/assignmentRelated/assignmentHandle';
 
 const StudentHomePage = () => {
     const dispatch = useDispatch();
 
     const { userDetails, currentUser, loading, response } = useSelector((state) => state.user);
-    const { subjectsList } = useSelector((state) => state.sclass);
+    const { subjectsList } = useSelector((state) => state.branch);
+    const { assignmentsList } = useSelector((state) => state.assignment);
 
     const [subjectAttendance, setSubjectAttendance] = useState([]);
 
-    const classID = currentUser.sclassName._id
+    const branchID = currentUser?.branch?._id;
 
     useEffect(() => {
-        dispatch(getUserDetails(currentUser._id, "Student"));
-        dispatch(getSubjectList(classID, "ClassSubjects"));
-    }, [dispatch, currentUser._id, classID]);
+        if (currentUser?._id && branchID) {
+            dispatch(getUserDetails(currentUser._id, "Student"));
+            dispatch(getSubjectList(branchID, "BranchSubjects"));
+            dispatch(fetchAssignments({ branch: branchID }));
+        }
+    }, [dispatch, currentUser?._id, branchID]);
 
     const numberOfSubjects = subjectsList && subjectsList.length;
+    const numberOfAssignments = assignmentsList && assignmentsList.length;
 
     useEffect(() => {
         if (userDetails) {
@@ -60,7 +66,7 @@ const StudentHomePage = () => {
                             <Title>
                                 Total Assignments
                             </Title>
-                            <Data start={0} end={15} duration={4} />
+                            <Data start={0} end={numberOfAssignments || 0} duration={4} />
                         </StyledPaper>
                     </Grid>
                     <Grid item xs={12} md={4} lg={3}>

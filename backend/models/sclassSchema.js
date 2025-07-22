@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const sclassSchema = new mongoose.Schema({
-    sclassName: {
+    branch: {
+        type: String,
+        required: true,
+    },
+    semester: {
         type: String,
         required: true,
     },
@@ -11,5 +15,5 @@ const sclassSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-module.exports = mongoose.model("sclass", sclassSchema);
+module.exports = mongoose.model("branch", sclassSchema);
 

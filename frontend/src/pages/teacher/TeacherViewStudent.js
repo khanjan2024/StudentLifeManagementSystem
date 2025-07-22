@@ -18,8 +18,8 @@ const TeacherViewStudent = () => {
 
     const address = "Student"
     const studentID = params.id
-    const teachSubject = currentUser.teachSubject?.subName
-    const teachSubjectID = currentUser.teachSubject?._id
+    const teachSubject = currentUser?.teachSubject?.subName
+    const teachSubjectID = currentUser?.teachSubject?._id
 
     useEffect(() => {
         dispatch(getUserDetails(studentID, address));
@@ -51,13 +51,20 @@ const TeacherViewStudent = () => {
         }
     }, [userDetails]);
 
-    const overallAttendancePercentage = calculateOverallAttendancePercentage(subjectAttendance);
+    // Calculate overall attendance percentage directly from attendance data
+    const totalPresent = subjectAttendance.filter(att => att.status === "Present").length;
+    const totalAbsent = subjectAttendance.filter(att => att.status === "Absent").length;
+    const totalAttendance = totalPresent + totalAbsent;
+    const overallAttendancePercentage = totalAttendance > 0 ? (totalPresent / totalAttendance) * 100 : 0;
     const overallAbsentPercentage = 100 - overallAttendancePercentage;
 
     const chartData = [
         { name: 'Present', value: overallAttendancePercentage },
         { name: 'Absent', value: overallAbsentPercentage }
     ];
+
+    // After userDetails is available, define branch
+    const branch = userDetails.branch || {};
 
     return (
         <>
@@ -72,9 +79,9 @@ const TeacherViewStudent = () => {
                     <br />
                     Roll Number: {userDetails.rollNum}
                     <br />
-                    Class: {sclassName.sclassName}
+                    Branch/Department: {branch.branch} | Semester: {branch.semester}
                     <br />
-                    School: {studentSchool.schoolName}
+                    College: {studentSchool.schoolName}
                     <br /><br />
 
                     <h3>Attendance:</h3>
@@ -83,7 +90,9 @@ const TeacherViewStudent = () => {
                         <>
                             {Object.entries(groupAttendanceBySubject(subjectAttendance)).map(([subName, { present, allData, subId, sessions }], index) => {
                                 if (subName === teachSubject) {
-                                    const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
+                                    const absentCount = allData.filter(data => data.status === "Absent").length;
+                                    const totalAttendance = present + absentCount;
+                                    const subjectAttendancePercentage = totalAttendance > 0 ? ((present / totalAttendance) * 100).toFixed(2) : 0;
 
                                     return (
                                         <Table key={index}>
@@ -91,7 +100,7 @@ const TeacherViewStudent = () => {
                                                 <StyledTableRow>
                                                     <StyledTableCell>Subject</StyledTableCell>
                                                     <StyledTableCell>Present</StyledTableCell>
-                                                    <StyledTableCell>Total Sessions</StyledTableCell>
+                                                    <StyledTableCell>Absent</StyledTableCell>
                                                     <StyledTableCell>Attendance Percentage</StyledTableCell>
                                                     <StyledTableCell align="center">Actions</StyledTableCell>
                                                 </StyledTableRow>
@@ -101,7 +110,7 @@ const TeacherViewStudent = () => {
                                                 <StyledTableRow>
                                                     <StyledTableCell>{subName}</StyledTableCell>
                                                     <StyledTableCell>{present}</StyledTableCell>
-                                                    <StyledTableCell>{sessions}</StyledTableCell>
+                                                    <StyledTableCell>{allData.filter(data => data.status === "Absent").length}</StyledTableCell>
                                                     <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
                                                     <StyledTableCell align="center">
                                                         <Button variant="contained" onClick={() => handleOpen(subId)}>

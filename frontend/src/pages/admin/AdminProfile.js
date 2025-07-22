@@ -7,6 +7,7 @@
 // import { Button, Collapse } from '@mui/material';
 
 import { useSelector } from 'react-redux';
+import { Paper, Box, Typography, Avatar, Container, Grid } from '@mui/material';
 
 const AdminProfile = () => {
     // const [showTab, setShowTab] = useState(false);
@@ -45,51 +46,18 @@ const AdminProfile = () => {
     // }
 
     return (
-        <div>
-            Name: {currentUser.name}
-            <br />
-            Email: {currentUser.email}
-            <br />
-            School: {currentUser.schoolName}
-            <br />
-            {/* <Button variant="contained" color="error" onClick={deleteHandler}>Delete</Button> */}
-            {/* <Button variant="contained" sx={styles.showButton}
-                onClick={() => setShowTab(!showTab)}>
-                {showTab ? <KeyboardArrowUp /> : <KeyboardArrowDown />}{buttonText}
-            </Button>
-            <Collapse in={showTab} timeout="auto" unmountOnExit>
-                <div className="register">
-                    <form className="registerForm" onSubmit={submitHandler}>
-                        <span className="registerTitle">Edit Details</span>
-                        <label>Name</label>
-                        <input className="registerInput" type="text" placeholder="Enter your name..."
-                            value={name}
-                            onChange={(event) => setName(event.target.value)}
-                            autoComplete="name" required />
-
-                        <label>School</label>
-                        <input className="registerInput" type="text" placeholder="Enter your school name..."
-                            value={schoolName}
-                            onChange={(event) => setSchoolName(event.target.value)}
-                            autoComplete="name" required />
-
-                        <label>Email</label>
-                        <input className="registerInput" type="email" placeholder="Enter your email..."
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            autoComplete="email" required />
-
-                        <label>Password</label>
-                        <input className="registerInput" type="password" placeholder="Enter your password..."
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            autoComplete="new-password" />
-
-                        <button className="registerButton" type="submit" >Update</button>
-                    </form>
-                </div>
-            </Collapse> */}
-        </div>
+        <Container maxWidth="sm" sx={{ py: 4 }}>
+            <Paper elevation={3} sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, mb: 3 }}>
+                <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+                    <Avatar sx={{ width: 120, height: 120, mb: 2 }}>
+                        {String(currentUser.name).charAt(0)}
+                    </Avatar>
+                    <Typography variant="h5" sx={{ fontWeight: 700 }}>{currentUser.name}</Typography>
+                    <Typography variant="subtitle1">Email: {currentUser.email}</Typography>
+                    <Typography variant="subtitle1">College: {currentUser.schoolName}</Typography>
+                </Box>
+            </Paper>
+        </Container>
     )
 }
 

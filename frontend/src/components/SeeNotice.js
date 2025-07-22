@@ -11,13 +11,16 @@ const SeeNotice = () => {
     const { noticesList, loading, error, response } = useSelector((state) => state.notice);
 
     useEffect(() => {
-        if (currentRole === "Admin") {
+        if (currentRole === "Admin" && currentUser?._id) {
             dispatch(getAllNotices(currentUser._id, "Notice"));
         }
-        else {
-            dispatch(getAllNotices(currentUser.school._id, "Notice"));
+        else if (currentRole === "Student" && currentUser?.school?._id) {
+            dispatch(getAllNotices(currentUser.school._id, "Notice", { targetRole: 'Student' }));
         }
-    }, [dispatch]);
+        else if (currentRole === "Teacher" && currentUser?.school?._id) {
+            dispatch(getAllNotices(currentUser.school._id, "Notice", { targetRole: 'Teacher' }));
+        }
+    }, [dispatch, currentRole, currentUser?._id, currentUser?.school?._id]);
 
     if (error) {
         console.log(error);
@@ -27,6 +30,7 @@ const SeeNotice = () => {
         { id: 'title', label: 'Title', minWidth: 170 },
         { id: 'details', label: 'Details', minWidth: 100 },
         { id: 'date', label: 'Date', minWidth: 170 },
+        { id: 'targetRole', label: 'Audience', minWidth: 100 },
     ];
 
     const noticeRows = noticesList.map((notice) => {
@@ -36,6 +40,7 @@ const SeeNotice = () => {
             title: notice.title,
             details: notice.details,
             date: dateString,
+            targetRole: notice.targetRole || 'All',
             id: notice._id,
         };
     });

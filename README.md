@@ -1,192 +1,428 @@
-<h1 align="center">
-    SCHOOL MANAGEMENT SYSTEM
-</h1>
+# College Management System
 
-<h3 align="center">
-Streamline school management, class organization, and add students and faculty.<br>
-Seamlessly track attendance, assess performance, and provide feedback. <br>
-Access records, view marks, and communicate effortlessly.
-</h3>
+![College Management System](https://img.shields.io/badge/College-Management%20System-blue)
+![MERN Stack](https://img.shields.io/badge/MERN-Stack-green)
+![Version](https://img.shields.io/badge/version-1.0.0-orange)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-<br>
-[Youtube Video](https://youtu.be/ol650KwQkgY?si=rKcboqSv3n-e4UbC)
-<br><br>
-[LinkedIn](https://www.linkedin.com/in/yogndr/)
+A comprehensive web-based College Management System built using the MERN stack (MongoDB, Express.js, React.js, Node.js). This system streamlines administrative tasks, enhances communication between students and teachers, and provides a centralized platform for managing academic activities.
 
-# About
+## 📋 Table of Contents
 
-The School Management System is a web-based application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. It aims to streamline school management, class organization, and facilitate communication between students, teachers, and administrators.
+- [Features](#features)
+- [User Roles](#user-roles)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [Usage](#usage)
+- [Deployment](#deployment)
+- [API Endpoints](#api-endpoints)
+- [Screenshots](#screenshots)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Features
+## ✨ Features
 
-- **User Roles:** The system supports three user roles: Admin, Teacher, and Student. Each role has specific functionalities and access levels.
+### Administrative Features
+- User management (students, teachers, administrators)
+- Branch/Department management
+- Subject allocation and management
+- Timetable creation and management
+- Notice board for announcements
+- Comprehensive dashboard with statistics
 
-- **Admin Dashboard:** Administrators can add new students and teachers, create classes and subjects, manage user accounts, and oversee system settings.
+### Academic Features
+- Student attendance tracking
+- Exam result management
+- Assignment creation and submission
+- Student performance analytics
+- Subject-wise progress tracking
 
-- **Attendance Tracking:** Teachers can easily take attendance for their classes, mark students as present or absent, and generate attendance reports.
+### Communication Features
+- Student queries and complaints system
+- Teacher responses to student queries
+- Branch-specific communication channels
+- Notification system for important updates
 
-- **Performance Assessment:** Teachers can assess students' performance by providing marks and feedback. Students can view their marks and track their progress over time.
+## 👥 User Roles
 
-- **Data Visualization:** Students can visualize their performance data through interactive charts and tables, helping them understand their academic performance at a glance.
+### Admin
+- System configuration and management
+- User account management
+- Branch/Department creation and management
+- Subject allocation to teachers
+- Timetable management
+- Notice creation and management
 
-- **Communication:** Users can communicate effortlessly through the system. Teachers can send messages to students and vice versa, promoting effective communication and collaboration.
+### Teacher
+- View assigned subjects and branches
+- Manage student attendance
+- Create and grade assignments
+- Respond to student queries
+- View student performance analytics
+- Access to branch-specific student data
 
-## Technologies Used
+### Student
+- View personal attendance records
+- Access exam results and performance metrics
+- Submit assignments
+- Raise queries and complaints
+- View timetable and notices
+- Track academic progress
 
-- Frontend: React.js, Material UI, Redux
-- Backend: Node.js, Express.js
-- Database: MongoDB
+## 💻 Tech Stack
 
-<br>
+### Frontend
+- React.js
+- Redux for state management
+- Material-UI for responsive design
+- Chart.js for data visualization
+- Axios for API requests
 
-# Installation
+### Backend
+- Node.js
+- Express.js
+- MongoDB for database
+- Mongoose for object modeling
+- JWT for authentication
+- Bcrypt for password hashing
 
-```sh
-git clone https://github.com/Yogndrr/MERN-School-Management-System.git
-```
-Open 2 terminals in separate windows/tabs.
+## 🚀 Installation
 
-Terminal 1: Setting Up Backend 
-```sh
-cd backend
-npm install
-npm start
-```
+### Prerequisites
+- Node.js (v14.x or higher)
+- MongoDB (v4.x or higher)
+- npm or yarn
 
-Create a file called .env in the backend folder.
-Inside it write this :
+### Backend Setup
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/college-management-system.git
+   cd college-management-system
+   ```
 
-```sh
-MONGO_URL = mongodb://127.0.0.1/school
-```
-If you are using MongoDB Compass you can use this database link but if you are using MongoDB Atlas then instead of this link write your own database link.
+2. Install backend dependencies
+   ```bash
+   cd backend
+   npm install
+   ```
 
-Terminal 2: Setting Up Frontend
-```sh
-cd frontend
-npm install
-npm start
-```
-Now, navigate to `localhost:3000` in your browser. 
-The Backend API will be running at `localhost:5000`.
-<br>
-# Error Solution
+3. Set up environment variables (see [Environment Variables](#environment-variables) section)
 
-You might encounter an error while signing up, either a network error or a loading error that goes on indefinitely.
+4. Start the backend server
+   ```bash
+   npm start
+   ```
+   The server will run on http://localhost:5000
 
-To resolve it:
+### Frontend Setup
+1. Open a new terminal and navigate to the frontend directory
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-1. Navigate to the `frontend > .env` file.
+2. Start the frontend development server
+   ```bash
+   npm start
+   ```
+   The application will open in your browser at http://localhost:3000
 
-2. Uncomment the first line. After that, terminate the frontend terminal. Open a new terminal and execute the following commands:
-```sh
-cd frontend
-npm start
-```
+## 🔐 Environment Variables
 
-After completing these steps, try signing up again. If the issue persists, follow these additional steps to resolve it:
+Create a `.env` file in the backend directory with the following variables:
 
-1. Navigate to the `frontend > src > redux > userRelated > userHandle.js` file.
+```env
+# Server Configuration
+PORT=5000
+NODE_ENV=development
 
-2. Add the following line after the import statements:
+# MongoDB Connection
+MONGODB_URI=mongodb://localhost:27017/college_management_system
 
-```javascript
-const REACT_APP_BASE_URL = "http://localhost:5000";
-```
+# JWT Secret
+JWT_SECRET=your_jwt_secret_key
 
-3. Replace all instances of `process.env.REACT_APP_BASE_URL` with `REACT_APP_BASE_URL`.
-
-**IMPORTANT:** Repeat the same process for all other files with "Handle" in their names.
-
-For example, in the `redux` folder, there are other folders like `userRelated`. In the `teacherRelated` folder, you'll find a file named `teacherHandle`. Similarly, other folders contain files with "Handle" in their names. Make sure to update these files as well.
-
-The issue arises because the `.env` file in the frontend may not work for all users, while it works for me.
-
-Additionally:
-
-- When testing the project, start by signing up rather than logging in as a guest or using regular login if you haven't created an account yet.
-  
-  To use guest mode, navigate to `LoginPage.js` and provide an email and password from a project already created in the system. This simplifies the login process, and after creating your account, you can use your credentials.
-
-These steps should resolve the network error in the frontend. If the issue persists, feel free to contact me for further assistance.
-
-# Delete Feature Not Working Solution
-
-When attempting to delete items, you may encounter a popup message stating, "Sorry, the delete function has been disabled for now." This message appears because I have disabled the delete function on my live site to prevent guests from deleting items. If you wish to enable the delete feature, please follow these steps:
-
-1. Navigate to the `frontend > src > redux > userRelated > userHandle.js` file.
-
-2. If you haven't made any changes, you should find the `deleteUser` function at line 71. It may be commented out. It might look like this:
-
-```javascript
-// export const deleteUser = (id, address) => async (dispatch) => {
-//     dispatch(getRequest());
-
-//     try {
-//         const result = await axios.delete(`${process.env.REACT_APP_BASE_URL}/${address}/${id}`);
-//         if (result.data.message) {
-//             dispatch(getFailed(result.data.message));
-//         } else {
-//             dispatch(getDeleteSuccess());
-//         }
-//     } catch (error) {
-//         dispatch(getError(error));
-//     }
-// }
-```
-
-3. Uncomment above `deleteUser` function and comment out this `deleteUser` function that is currently running from line 87 to line 90 :
-
-```javascript
-export const deleteUser = (id, address) => async (dispatch) => {
-    dispatch(getRequest());
-    dispatch(getFailed("Sorry the delete function has been disabled for now."));
-}
-```
-
-4. If you have previously modified the code, you may find the `deleteUser` functions at different lines. In this case, uncomment the original code and comment out the current one.
-
-5. Next, navigate to the `frontend > src > pages > admin` folder. Here, you will find different folders suffixed with "Related". Open each folder and locate files prefixed with "Show".
-
-6. Open each file with "Show" as a prefix and search for a function named `deleteHandler`. For example:
-   
-```javascript
-const deleteHandler = (deleteID, address) => {
-  console.log(deleteID);
-  console.log(address);
-  setMessage("Sorry, the delete function has been disabled for now.");
-  setShowPopup(true);
-  // dispatch(deleteUser(deleteID, address))
-  //   .then(() => {
-  //     dispatch(getAllSclasses(adminID, "Sclass"));
-  //   })
-}
+# Admin Credentials (for initial setup)
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=securepassword
 ```
 
-7. This is an example snippet from `ShowClasses`. In other files with "Show" as a prefix, it may differ.
+## 📱 Usage
 
-8. Uncomment the commented-out code inside the `deleteHandler` function and comment out the existing code. It should resemble this:
+### Admin Login
+1. Access the application at http://localhost:3000
+2. Login with admin credentials
+3. Use the dashboard to manage the system
 
-```javascript
-const deleteHandler = (deleteID, address) => {
-  // console.log(deleteID);
-  // console.log(address);
-  // setMessage("Sorry, the delete function has been disabled for now.");
-  // setShowPopup(true);
-  dispatch(deleteUser(deleteID, address))
-    .then(() => {
-      dispatch(getAllSclasses(adminID, "Sclass"));
-    })
-}
+### Teacher Login
+1. Access the application at http://localhost:3000
+2. Login with teacher credentials provided by admin
+3. Manage classes, attendance, and respond to student queries
+
+### Student Login
+1. Access the application at http://localhost:3000
+2. Login with student credentials provided by admin
+3. View attendance, submit assignments, and raise queries
+
+## 🚀 Deployment
+
+### Normal Deployment
+
+This is a straightforward approach to deploy your application with minimal configuration:
+
+#### Step 1: Set Up MongoDB Database
+
+You already have a MongoDB Atlas connection string:
+```
+mongodb+srv://KhanjanNath:<db_password>@databaseofslms.ebxlkpi.mongodb.net/
 ```
 
-9. Repeat these steps for every other file. In some cases, the `deleteHandler` function may also be found in files prefixed with "View". Check those files and repeat the same process.
+To use this connection string:
 
-If the issue persists, feel free to contact me for further assistance.
+1. **Replace `<db_password>` with your actual password**
+2. **Add the database name** at the end (e.g., "school" or "college")
 
-Don't forget to leave a star for this project if you found the solution helpful. Thank you!
+Your final connection string should look like:
+```
+mongodb+srv://KhanjanNath:your_actual_password@databaseofslms.ebxlkpi.mongodb.net/school
+```
 
-# Deployment
-* Render - server side
-* Netlify - client side
+This connection string has been added to your backend/.env file. If you need to change the password or database name, update it there.
 
+**Note**: If you don't remember your MongoDB Atlas password, you can reset it:
+1. Go to [MongoDB Atlas](https://cloud.mongodb.com/)
+2. Sign in to your account
+3. Go to "Database Access"
+4. Find your username and click "Edit"
+5. Click "Edit Password" and set a new password
+6. Update your .env file with the new password
+
+#### Step 2: Deploy Backend (Simplified)
+
+We'll use Render.com which offers a free tier for hosting:
+
+1. **Prepare Your GitHub Repository**:
+   - Make sure your project is on GitHub
+   - If not, create a GitHub account, create a new repository, and push your code
+
+2. **Create a Render Account**:
+   - Go to [Render.com](https://render.com/)
+   - Sign up with your GitHub account
+
+3. **Deploy Your Backend**:
+   - Click "New +" and select "Web Service"
+   - Connect your GitHub repository
+   - Fill in these settings:
+     - Name: `your-college-system-backend`
+     - Root Directory: Leave empty
+     - Environment: `Node`
+     - Build Command: `cd backend && npm install`
+     - Start Command: `cd backend && node server.js`
+   - Under "Advanced" settings, add these environment variables:
+     - `MONGODB_URI`: Paste your MongoDB connection string from Step 1
+     - `JWT_SECRET`: Type any random string (e.g., "my-secret-key-123")
+     - `PORT`: `5000`
+   - Select the free plan
+   - Click "Create Web Service"
+
+4. **Wait for Deployment**:
+   - Render will automatically build and deploy your backend
+   - This may take a few minutes
+   - When complete, you'll see a URL like `https://your-college-system-backend.onrender.com`
+   - Save this URL for the next step
+
+#### Step 3: Deploy Frontend (Simplified)
+
+We'll use Netlify which offers a free tier for hosting:
+
+1. **Create a Netlify Account**:
+   - Go to [Netlify.com](https://www.netlify.com/)
+   - Sign up with your GitHub account
+
+2. **Deploy Your Frontend**:
+   - Click "Add new site" and select "Import an existing project"
+   - Select "Deploy with GitHub"
+   - Select your GitHub repository
+   - Configure these settings:
+     - Base directory: `frontend`
+     - Build command: `npm run build`
+     - Publish directory: `frontend/build`
+   - Click "Deploy site"
+
+3. **Wait for Deployment**:
+   - Netlify will automatically build and deploy your frontend
+   - When complete, you'll see a URL like `https://your-college-system.netlify.app`
+
+#### Step 4: Connect Frontend to Backend (Simplified)
+
+Now we need to tell your frontend where to find your backend:
+
+1. **Add Environment Variable**:
+   - In your Netlify dashboard, click on your site
+   - Go to "Site settings" → "Build & deploy" → "Environment"
+   - Click "Edit variables"
+   - Add a new variable:
+     - Key: `REACT_APP_BASE_URL`
+     - Value: Your backend URL from Step 2 (e.g., `https://your-college-system-backend.onrender.com`)
+   - Click "Save"
+
+2. **Redeploy Your Frontend**:
+   - Go to "Deploys" in your Netlify dashboard
+   - Click "Trigger deploy" → "Deploy site"
+   - Wait for the deployment to complete
+
+#### Step 5: Test Your Application
+
+1. **Visit Your Website**:
+   - Go to your Netlify URL (e.g., `https://your-college-system.netlify.app`)
+   - You should see the login page
+
+2. **Create an Admin Account**:
+   - Register as an admin using the registration page
+   - If you encounter any issues, check the browser console for errors
+
+3. **Test All Features**:
+   - Create branches, subjects, and users
+   - Test student and teacher logins
+   - Try creating assignments, attendance records, etc.
+
+Congratulations! Your College Management System is now deployed and accessible online from anywhere. You can share the Netlify URL with others to access your application.
+
+## 🔄 API Endpoints
+
+### Authentication
+- `POST /AdminLogin` - Admin login
+- `POST /TeacherLogin` - Teacher login
+- `POST /StudentLogin` - Student login
+
+### Admin Routes
+- `POST /AdminReg` - Register new admin
+- `GET /Admin/:id` - Get admin details
+- `POST /SclassCreate` - Create new branch/class
+- `GET /SclassList/:id` - Get all branches/classes
+- `DELETE /Sclass/:id` - Delete branch/class
+- `POST /SubjectCreate` - Create new subject
+- `GET /AllSubjects/:id` - Get all subjects
+
+### Teacher Routes
+- `POST /TeacherReg` - Register new teacher
+- `GET /Teachers/:id` - Get all teachers
+- `GET /Teacher/:id` - Get teacher details
+- `DELETE /Teacher/:id` - Delete teacher
+- `PUT /TeacherSubject` - Update teacher subject
+
+### Student Routes
+- `POST /StudentReg` - Register new student
+- `GET /Students/:id` - Get all students
+- `GET /Student/:id` - Get student details
+- `DELETE /Student/:id` - Delete student
+- `PUT /Student/:id` - Update student details
+- `PUT /StudentAttendance/:id` - Update student attendance
+
+### Complain/Query Routes
+- `POST /ComplainCreate` - Create new complaint/query
+- `GET /ComplainList/:id` - Get all complaints/queries
+- `GET /TeacherComplainList/:schoolId/:branchId` - Get branch-specific queries
+- `POST /ComplainRespond/:complainId` - Respond to complaint/query
+- `PATCH /ComplainResolve/:complainId` - Resolve complaint
+
+### Assignment Routes
+- `POST /AssignmentCreate` - Create new assignment
+- `GET /Assignments` - Get all assignments
+- `POST /AssignmentSubmit/:assignmentId` - Submit assignment
+- `GET /AssignmentSubmissions/:assignmentId` - Get assignment submissions
+- `DELETE /Assignment/:assignmentId` - Delete assignment
+
+### Timetable Routes
+- `POST /TimetableCreate` - Create new timetable
+- `GET /Timetables` - Get all timetables
+- `PUT /Timetable/:id` - Update timetable
+- `DELETE /Timetable/:id` - Delete timetable
+
+## 📸 Screenshots
+
+*[Include screenshots of key features here]*
+
+## 📤 Pushing to GitHub
+
+Follow these steps to push your codebase to GitHub:
+
+### Step 1: Create a GitHub Repository
+
+1. Go to [GitHub](https://github.com/) and sign in (or create an account if you don't have one)
+2. Click the "+" icon in the top-right corner and select "New repository"
+3. Enter a repository name (e.g., "college-management-system")
+4. Add a description (optional)
+5. Choose "Public" or "Private" visibility
+6. Do NOT initialize with README, .gitignore, or license (since you already have these files)
+7. Click "Create repository"
+
+### Step 2: Initialize Git in Your Project
+
+Open a command prompt or terminal in your project's root directory and run:
+
+```bash
+git init
+```
+
+### Step 3: Add Your Files to Git
+
+```bash
+git add .
+```
+
+### Step 4: Commit Your Files
+
+```bash
+git commit -m "Initial commit"
+```
+
+### Step 5: Link to Your GitHub Repository
+
+Replace `yourusername` and `your-repository-name` with your actual GitHub username and repository name:
+
+```bash
+git remote add origin https://github.com/yourusername/your-repository-name.git
+```
+
+### Step 6: Push to GitHub
+
+```bash
+git push -u origin main
+```
+
+If you're using an older version of Git that uses "master" as the default branch:
+
+```bash
+git push -u origin master
+```
+
+If you encounter an error, try:
+
+```bash
+git branch -M main
+git push -u origin main
+```
+
+### Step 7: Verify Your Repository
+
+Go to your GitHub repository URL (https://github.com/yourusername/your-repository-name) to confirm your code has been pushed successfully.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+Developed with ❤️ by KRBS

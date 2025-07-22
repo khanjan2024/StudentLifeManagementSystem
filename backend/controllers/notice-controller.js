@@ -4,7 +4,8 @@ const noticeCreate = async (req, res) => {
     try {
         const notice = new Notice({
             ...req.body,
-            school: req.body.adminID
+            school: req.body.adminID,
+            targetRole: req.body.targetRole || 'All'
         })
         const result = await notice.save()
         res.send(result)
@@ -15,7 +16,9 @@ const noticeCreate = async (req, res) => {
 
 const noticeList = async (req, res) => {
     try {
-        let notices = await Notice.find({ school: req.params.id })
+        const filter = { school: req.params.id };
+        if (req.query.targetRole) filter.targetRole = { $in: ['All', req.query.targetRole] };
+        let notices = await Notice.find(filter)
         if (notices.length > 0) {
             res.send(notices)
         } else {

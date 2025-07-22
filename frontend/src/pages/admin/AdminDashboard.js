@@ -41,6 +41,7 @@ import AddClass from './classRelated/AddClass';
 import ClassDetails from './classRelated/ClassDetails';
 import ShowClasses from './classRelated/ShowClasses';
 import AccountMenu from '../../components/AccountMenu';
+import AdminTimetable from './AdminTimetable';
 
 const AdminDashboard = () => {
     const [open, setOpen] = useState(false);
@@ -52,8 +53,11 @@ const AdminDashboard = () => {
         <>
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                <AppBar open={open} position='absolute'>
-                    <Toolbar sx={{ pr: '24px' }}>
+                <AppBar open={open} position='absolute' sx={{
+                    background: 'linear-gradient(90deg, #f4f6fa 60%, #e0e7ff 100%)',
+                    boxShadow: '0 2px 12px rgba(80, 0, 128, 0.08)',
+                }}>
+                    <Toolbar sx={{ pr: '24px', minHeight: { xs: 56, sm: 72 } }}>
                         <IconButton
                             edge="start"
                             color="inherit"
@@ -66,12 +70,16 @@ const AdminDashboard = () => {
                         >
                             <MenuIcon />
                         </IconButton>
+                        {/* Logo/avatar placeholder */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                            <Box sx={{ width: 36, height: 36, bgcolor: 'primary.main', borderRadius: '50%', mr: 1 }} />
+                        </Box>
                         <Typography
                             component="h1"
-                            variant="h6"
-                            color="inherit"
+                            variant="h4"
+                            color="primary.main"
                             noWrap
-                            sx={{ flexGrow: 1 }}
+                            sx={{ flexGrow: 1, fontWeight: 700 }}
                         >
                             Admin Dashboard
                         </Typography>
@@ -89,7 +97,7 @@ const AdminDashboard = () => {
                         <SideBar />
                     </List>
                 </Drawer>
-                <Box component="main" sx={styles.boxStyled}>
+                <Box component="main" sx={{ ...styles.boxStyled, p: { xs: 2, sm: 4 } }}>
                     <Toolbar />
                     <Routes>
                         <Route path="/" element={<AdminHomePage />} />
@@ -117,7 +125,7 @@ const AdminDashboard = () => {
                         <Route path="/Admin/addclass" element={<AddClass />} />
                         <Route path="/Admin/classes" element={<ShowClasses />} />
                         <Route path="/Admin/classes/class/:id" element={<ClassDetails />} />
-                        <Route path="/Admin/class/addstudents/:id" element={<AddStudent situation="Class" />} />
+                        <Route path="/Admin/class/addstudents/:id" element={<AddStudent situation="Branch" />} />
 
                         {/* Student */}
                         <Route path="/Admin/addstudents" element={<AddStudent situation="Student" />} />
@@ -133,6 +141,9 @@ const AdminDashboard = () => {
                         <Route path="/Admin/teachers/choosesubject/:id" element={<ChooseSubject situation="Norm" />} />
                         <Route path="/Admin/teachers/choosesubject/:classID/:teacherID" element={<ChooseSubject situation="Teacher" />} />
                         <Route path="/Admin/teachers/addteacher/:id" element={<AddTeacher />} />
+
+                        {/* Timetable */}
+                        <Route path="/Admin/timetable" element={<AdminTimetable />} />
 
                         <Route path="/logout" element={<Logout />} />
                     </Routes>

@@ -23,6 +23,8 @@ import TeacherHomePage from './TeacherHomePage';
 import TeacherProfile from './TeacherProfile';
 import TeacherViewStudent from './TeacherViewStudent';
 import StudentExamMarks from '../admin/studentRelated/StudentExamMarks';
+import TeacherAssignments from './TeacherAssignments';
+import TeacherQueries from './TeacherQueries';
 
 const TeacherDashboard = () => {
     const [open, setOpen] = useState(true);
@@ -34,8 +36,11 @@ const TeacherDashboard = () => {
         <>
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                <AppBar open={open} position='absolute'>
-                    <Toolbar sx={{ pr: '24px' }}>
+                <AppBar open={open} position='absolute' sx={{
+                    background: 'linear-gradient(90deg, #f4f6fa 60%, #e0e7ff 100%)',
+                    boxShadow: '0 2px 12px rgba(80, 0, 128, 0.08)',
+                }}>
+                    <Toolbar sx={{ pr: '24px', minHeight: { xs: 56, sm: 72 } }}>
                         <IconButton
                             edge="start"
                             color="inherit"
@@ -48,12 +53,16 @@ const TeacherDashboard = () => {
                         >
                             <MenuIcon />
                         </IconButton>
+                        {/* Logo/avatar placeholder */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                            <Box sx={{ width: 36, height: 36, bgcolor: 'primary.main', borderRadius: '50%', mr: 1 }} />
+                        </Box>
                         <Typography
                             component="h1"
-                            variant="h6"
-                            color="inherit"
+                            variant="h4"
+                            color="primary.main"
                             noWrap
-                            sx={{ flexGrow: 1 }}
+                            sx={{ flexGrow: 1, fontWeight: 700 }}
                         >
                             Teacher Dashboard
                         </Typography>
@@ -71,7 +80,7 @@ const TeacherDashboard = () => {
                         <TeacherSideBar />
                     </List>
                 </Drawer>
-                <Box component="main" sx={styles.boxStyled}>
+                <Box component="main" sx={{ ...styles.boxStyled, p: { xs: 2, sm: 4 } }}>
                     <Toolbar />
                     <Routes>
                         <Route path="/" element={<TeacherHomePage />} />
@@ -80,6 +89,8 @@ const TeacherDashboard = () => {
                         <Route path="/Teacher/profile" element={<TeacherProfile />} />
 
                         <Route path="/Teacher/complain" element={<TeacherComplain />} />
+                        <Route path="/Teacher/assignments" element={<TeacherAssignments />} />
+                        <Route path="/Teacher/queries" element={<TeacherQueries />} />
 
                         <Route path="/Teacher/class" element={<TeacherClassDetails />} />
                         <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />

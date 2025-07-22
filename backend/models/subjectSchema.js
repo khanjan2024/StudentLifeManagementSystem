@@ -9,13 +9,10 @@ const subjectSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    sessions: {
-        type: String,
-        required: true,
-    },
-    sclassName: {
+
+    branch: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'sclass',
+        ref: 'branch',
         required: true,
     },
     school: {
@@ -25,6 +22,10 @@ const subjectSchema = new mongoose.Schema({
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'teacher',
+    },
+    semester: {
+        type: String,
+        required: false
     }
 }, { timestamps: true });
 

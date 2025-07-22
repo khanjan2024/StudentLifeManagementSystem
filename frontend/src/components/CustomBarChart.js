@@ -142,7 +142,7 @@ const CustomTooltipContent = ({ active, payload, dataKey }) => {
                     </>
                 ) : (
                     <>
-                        <TooltipMain>{subName.subName}</TooltipMain>
+                        <TooltipMain>{subName?.subName || 'N/A'}</TooltipMain>
                         <TooltipText>Marks: {marksObtained}</TooltipText>
                     </>
                 )}
@@ -157,9 +157,17 @@ const CustomBarChart = ({ chartData, dataKey }) => {
     const subjects = chartData.map((data) => data.subject);
     const distinctColors = generateDistinctColors(subjects.length);
 
+    // Create a safe data accessor for XAxis
+    const getXAxisData = (data) => {
+        if (dataKey === "marksObtained") {
+            return data.subName?.subName || 'N/A';
+        }
+        return data.subject;
+    };
+
     return (
         <BarChart width={500} height={500} data={chartData}>
-            <XAxis dataKey={dataKey === "marksObtained" ? "subName.subName" : "subject"} />
+            <XAxis dataKey={getXAxisData} />
             <YAxis domain={[0, 100]} />
             <Tooltip content={<CustomTooltipContent dataKey={dataKey} />} />
             <Bar dataKey={dataKey}>

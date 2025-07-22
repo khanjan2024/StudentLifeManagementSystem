@@ -75,21 +75,25 @@ const ShowNotices = () => {
     return (
         <>
             {loading ?
-                <div>Loading...</div>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+                    <div>Loading...</div>
+                </Box>
                 :
                 <>
                     {response ?
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                             <GreenButton variant="contained"
-                                onClick={() => navigate("/Admin/addnotice")}>
-                                Add Notice
-                            </GreenButton>
+                                onClick={() => navigate("/Admin/addnotice")}>Add Notice</GreenButton>
                         </Box>
                         :
-                        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                            {Array.isArray(noticesList) && noticesList.length > 0 &&
+                        <Paper sx={{ width: '100%', overflow: 'auto', p: { xs: 2, sm: 4 }, borderRadius: 4, boxShadow: 3, minHeight: 320 }}>
+                            {Array.isArray(noticesList) && noticesList.length > 0 ? (
                                 <TableTemplate buttonHaver={NoticeButtonHaver} columns={noticeColumns} rows={noticeRows} />
-                            }
+                            ) : (
+                                <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+                                    No notices found.
+                                </Box>
+                            )}
                             <SpeedDialTemplate actions={actions} />
                         </Paper>
                     }

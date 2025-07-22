@@ -7,6 +7,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useSelector } from 'react-redux';
 
 const TeacherSideBar = () => {
@@ -27,14 +28,21 @@ const TeacherSideBar = () => {
                     <ListItemIcon>
                         <ClassOutlinedIcon color={location.pathname.startsWith("/Teacher/class") ? 'primary' : 'inherit'} />
                     </ListItemIcon>
-                    <ListItemText primary={`Class ${sclassName.sclassName}`} />
+                    <ListItemText primary={`Branch/Department`} />
                 </ListItemButton>
-                <ListItemButton component={Link} to="/Teacher/complain">
+                <ListItemButton component={Link} to="/Teacher/assignments">
                     <ListItemIcon>
-                        <AnnouncementOutlinedIcon color={location.pathname.startsWith("/Teacher/complain") ? 'primary' : 'inherit'} />
+                        <AssignmentIcon color={location.pathname.startsWith("/Teacher/assignments") ? 'primary' : 'inherit'} />
                     </ListItemIcon>
-                    <ListItemText primary="Complain" />
+                    <ListItemText primary="Assignments" />
                 </ListItemButton>
+                <ListItemButton component={Link} to="/Teacher/queries">
+                    <ListItemIcon>
+                        <AnnouncementOutlinedIcon color={location.pathname.startsWith("/Teacher/queries") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="Queries" />
+                </ListItemButton>
+                {/* Complaints option removed - teachers should only see queries */}
             </React.Fragment>
             <Divider sx={{ my: 1 }} />
             <React.Fragment>

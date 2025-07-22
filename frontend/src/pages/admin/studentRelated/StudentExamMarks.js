@@ -17,7 +17,7 @@ import {
 const StudentExamMarks = ({ situation }) => {
     const dispatch = useDispatch();
     const { currentUser, userDetails, loading } = useSelector((state) => state.user);
-    const { subjectsList } = useSelector((state) => state.sclass);
+    const { subjectsList } = useSelector((state) => state.branch || {});
     const { response, error, statestatus } = useSelector((state) => state.student);
     const params = useParams()
 
@@ -51,11 +51,15 @@ const StudentExamMarks = ({ situation }) => {
     }, [dispatch, userDetails]);
 
     const changeHandler = (event) => {
-        const selectedSubject = subjectsList.find(
-            (subject) => subject.subName === event.target.value
-        );
-        setSubjectName(selectedSubject.subName);
-        setChosenSubName(selectedSubject._id);
+        if (Array.isArray(subjectsList)) {
+            const selectedSubject = subjectsList.find(
+                (subject) => subject.subName === event.target.value
+            );
+            if (selectedSubject) {
+                setSubjectName(selectedSubject.subName);
+                setChosenSubName(selectedSubject._id);
+            }
+        }
     }
 
     const fields = { subName: chosenSubName, marksObtained }
@@ -134,7 +138,7 @@ const StudentExamMarks = ({ situation }) => {
                                                 label="Choose an option"
                                                 onChange={changeHandler} required
                                             >
-                                                {subjectsList ?
+                                                {Array.isArray(subjectsList) && subjectsList.length > 0 ?
                                                     subjectsList.map((subject, index) => (
                                                         <MenuItem key={index} value={subject.subName}>
                                                             {subject.subName}

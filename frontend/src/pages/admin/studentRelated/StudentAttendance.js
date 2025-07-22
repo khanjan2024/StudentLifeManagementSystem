@@ -17,7 +17,7 @@ import Popup from '../../../components/Popup';
 const StudentAttendance = ({ situation }) => {
     const dispatch = useDispatch();
     const { currentUser, userDetails, loading } = useSelector((state) => state.user);
-    const { subjectsList } = useSelector((state) => state.sclass);
+    const { subjectsList } = useSelector((state) => state.branch);
     const { response, error, statestatus } = useSelector((state) => state.student);
     const params = useParams()
 

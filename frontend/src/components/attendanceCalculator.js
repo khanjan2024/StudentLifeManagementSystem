@@ -1,9 +1,18 @@
 export const calculateSubjectAttendancePercentage = (presentCount, totalSessions) => {
-    if (totalSessions === 0 || presentCount === 0) {
+    // Instead of using totalSessions from subject schema, we'll use the total attendance records
+    // which is the sum of present and absent counts
+    const totalRecords = presentCount + (totalSessions - presentCount);
+    
+    // Handle edge cases: if totalRecords is 0
+    if (totalRecords <= 0) {
         return 0;
     }
-    const percentage = (presentCount / totalSessions) * 100;
-    return percentage.toFixed(2); // Limit to two decimal places
+    
+    // Ensure presentCount is a valid number
+    const validPresentCount = presentCount || 0;
+    
+    const percentage = (validPresentCount / totalRecords) * 100;
+    return isNaN(percentage) ? 0 : parseFloat(percentage.toFixed(2)); // Limit to two decimal places and ensure it's a number
 };
 
 
@@ -38,23 +47,24 @@ export const groupAttendanceBySubject = (subjectAttendance) => {
 }
 
 export const calculateOverallAttendancePercentage = (subjectAttendance) => {
-    let totalSessionsSum = 0;
-    let presentCountSum = 0;
-    const uniqueSubIds = [];
-
-    subjectAttendance.forEach((attendance) => {
-        const subId = attendance.subName._id;
-        if (!uniqueSubIds.includes(subId)) {
-            const sessions = parseInt(attendance.subName.sessions);
-            totalSessionsSum += sessions;
-            uniqueSubIds.push(subId);
-        }
-        presentCountSum += attendance.status === "Present" ? 1 : 0;
-    });
-
-    if (totalSessionsSum === 0 || presentCountSum === 0) {
+    // If there's no attendance data, return 0
+    if (!subjectAttendance || !Array.isArray(subjectAttendance) || subjectAttendance.length === 0) {
         return 0;
     }
+    
+    let totalAttendanceRecords = subjectAttendance.length;
+    let presentCountSum = 0;
 
-    return (presentCountSum / totalSessionsSum) * 100;
+    // Count present attendances
+    subjectAttendance.forEach((attendance) => {
+        if (attendance && attendance.status === "Present") {
+            presentCountSum++;
+        }
+    });
+
+    // Calculate percentage
+    const percentage = (presentCountSum / totalAttendanceRecords) * 100;
+    
+    // Return 0 if NaN, otherwise return the percentage with 2 decimal places
+    return isNaN(percentage) ? 0 : parseFloat(percentage.toFixed(2));
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, TextField, Paper, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStuff } from '../../../redux/userRelated/userHandle';
@@ -9,8 +9,9 @@ import Popup from "../../../components/Popup";
 import Classroom from "../../../assets/classroom.png";
 import styled from "styled-components";
 
-const AddClass = () => {
-    const [sclassName, setSclassName] = useState("");
+const AddBranch = () => {
+    const [branch, setBranch] = useState("");
+    const [semester, setSemester] = useState("");
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -26,7 +27,8 @@ const AddClass = () => {
     const [showPopup, setShowPopup] = useState(false);
 
     const fields = {
-        sclassName,
+        branch,
+        semester,
         adminID,
     };
 
@@ -38,7 +40,7 @@ const AddClass = () => {
 
     useEffect(() => {
         if (status === 'added' && tempDetails) {
-            navigate("/Admin/classes/class/" + tempDetails._id)
+            navigate("/Admin/classes")
             dispatch(underControl())
             setLoader(false)
         }
@@ -55,52 +57,53 @@ const AddClass = () => {
     }, [status, navigate, error, response, dispatch, tempDetails]);
     return (
         <>
-            <StyledContainer>
-                <StyledBox>
-                    <Stack sx={{
-                        alignItems: 'center',
-                        mb: 3
-                    }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', bgcolor: 'background.default' }}>
+                <Paper elevation={6} sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, minWidth: { xs: 320, sm: 400 }, width: '100%', maxWidth: 480 }}>
+                    <Stack sx={{ alignItems: 'center', mb: 3 }}>
                         <img
                             src={Classroom}
                             alt="classroom"
                             style={{ width: '80%' }}
                         />
                     </Stack>
-                    <form onSubmit={submitHandler}>
-                        <Stack spacing={3}>
-                            <TextField
-                                label="Create a class"
-                                variant="outlined"
-                                value={sclassName}
-                                onChange={(event) => {
-                                    setSclassName(event.target.value);
-                                }}
-                                required
-                            />
-                            <BlueButton
-                                fullWidth
-                                size="large"
-                                sx={{ mt: 3 }}
-                                variant="contained"
-                                type="submit"
-                                disabled={loader}
-                            >
-                                {loader ? <CircularProgress size={24} color="inherit" /> : "Create"}
-                            </BlueButton>
-                            <Button variant="outlined" onClick={() => navigate(-1)}>
-                                Go Back
-                            </Button>
-                        </Stack>
-                    </form>
-                </StyledBox>
-            </StyledContainer>
+                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 700, color: 'primary.main', textAlign: 'center' }}>
+                        Add Branch/Department
+                    </Typography>
+                    <Box component="form" onSubmit={submitHandler} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <TextField
+                            label="Branch/Department"
+                            value={branch}
+                            onChange={(event) => setBranch(event.target.value)}
+                            required
+                        />
+                        <TextField
+                            label="Semester"
+                            value={semester}
+                            onChange={(event) => setSemester(event.target.value)}
+                            required
+                        />
+                        <Button
+                            fullWidth
+                            size="large"
+                            sx={{ mt: 3, fontWeight: 600 }}
+                            variant="contained"
+                            type="submit"
+                            disabled={loader}
+                        >
+                            {loader ? <CircularProgress size={24} color="inherit" /> : "Create"}
+                        </Button>
+                        <Button variant="outlined" onClick={() => navigate(-1)}>
+                            Go Back
+                        </Button>
+                    </Box>
+                </Paper>
+            </Box>
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </>
     )
 }
 
-export default AddClass
+export default AddBranch
 
 const StyledContainer = styled(Box)`
   flex: 1 1 auto;

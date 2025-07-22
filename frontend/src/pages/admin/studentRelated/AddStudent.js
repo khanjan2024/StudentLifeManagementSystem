@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../../redux/userRelated/userHandle';
 import Popup from '../../../components/Popup';
 import { underControl } from '../../../redux/userRelated/userSlice';
-import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
-import { CircularProgress } from '@mui/material';
+import { getAllBranches } from '../../../redux/sclassRelated/sclassHandle';
+import { Paper, Box, Typography, TextField, Button, CircularProgress, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 
 const AddStudent = ({ situation }) => {
     const dispatch = useDispatch()
@@ -14,21 +14,21 @@ const AddStudent = ({ situation }) => {
 
     const userState = useSelector(state => state.user);
     const { status, currentUser, response, error } = userState;
-    const { sclassesList } = useSelector((state) => state.sclass);
+    const { branchesList } = useSelector((state) => state.branch);
 
     const [name, setName] = useState('');
     const [rollNum, setRollNum] = useState('');
     const [password, setPassword] = useState('')
-    const [className, setClassName] = useState('')
-    const [sclassName, setSclassName] = useState('')
+    const [branchId, setBranchId] = useState('')
+    const [semester, setSemester] = useState('')
 
     const adminID = currentUser._id
     const role = "Student"
     const attendance = []
 
     useEffect(() => {
-        if (situation === "Class") {
-            setSclassName(params.id);
+        if (situation === "Branch") {
+            setBranchId(params.id);
         }
     }, [params.id, situation]);
 
@@ -37,28 +37,23 @@ const AddStudent = ({ situation }) => {
     const [loader, setLoader] = useState(false)
 
     useEffect(() => {
-        dispatch(getAllSclasses(adminID, "Sclass"));
+        dispatch(getAllBranches(adminID, "Branch"));
     }, [adminID, dispatch]);
 
     const changeHandler = (event) => {
-        if (event.target.value === 'Select Class') {
-            setClassName('Select Class');
-            setSclassName('');
-        } else {
-            const selectedClass = sclassesList.find(
-                (classItem) => classItem.sclassName === event.target.value
-            );
-            setClassName(selectedClass.sclassName);
-            setSclassName(selectedClass._id);
-        }
+        const selectedBranch = branchesList.find(
+            (branchItem) => branchItem.branch === event.target.value
+        );
+        setBranchId(selectedBranch._id);
+        setSemester(selectedBranch.semester);
     }
 
-    const fields = { name, rollNum, password, sclassName, adminID, role, attendance }
+    const fields = { name, rollNum, password, branch: branchId, semester, adminID, role, attendance }
 
     const submitHandler = (event) => {
         event.preventDefault()
-        if (sclassName === "") {
-            setMessage("Please select a classname")
+        if (branchId === "") {
+            setMessage("Please select a branch/department")
             setShowPopup(true)
         }
         else {
@@ -86,54 +81,63 @@ const AddStudent = ({ situation }) => {
 
     return (
         <>
-            <div className="register">
-                <form className="registerForm" onSubmit={submitHandler}>
-                    <span className="registerTitle">Add Student</span>
-                    <label>Name</label>
-                    <input className="registerInput" type="text" placeholder="Enter student's name..."
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        autoComplete="name" required />
-
-                    {
-                        situation === "Student" &&
-                        <>
-                            <label>Class</label>
-                            <select
-                                className="registerInput"
-                                value={className}
-                                onChange={changeHandler} required>
-                                <option value='Select Class'>Select Class</option>
-                                {sclassesList.map((classItem, index) => (
-                                    <option key={index} value={classItem.sclassName}>
-                                        {classItem.sclassName}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    }
-
-                    <label>Roll Number</label>
-                    <input className="registerInput" type="number" placeholder="Enter student's Roll Number..."
-                        value={rollNum}
-                        onChange={(event) => setRollNum(event.target.value)}
-                        required />
-
-                    <label>Password</label>
-                    <input className="registerInput" type="password" placeholder="Enter student's password..."
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        autoComplete="new-password" required />
-
-                    <button className="registerButton" type="submit" disabled={loader}>
-                        {loader ? (
-                            <CircularProgress size={24} color="inherit" />
-                        ) : (
-                            'Add'
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', bgcolor: 'background.default' }}>
+                <Paper elevation={6} sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, minWidth: { xs: 320, sm: 400 }, width: '100%', maxWidth: 480 }}>
+                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 700, color: 'primary.main', textAlign: 'center' }}>
+                        Add Student
+                    </Typography>
+                    <Box component="form" onSubmit={submitHandler} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <TextField
+                            label="Name"
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            autoComplete="name"
+                            required
+                        />
+                        {situation === "Student" && (
+                            <FormControl required>
+                                <InputLabel>Branch/Department</InputLabel>
+                                <Select
+                                    value={branchId}
+                                    label="Branch/Department"
+                                    onChange={changeHandler}
+                                >
+                                    {branchesList.map((branchItem, index) => (
+                                        <MenuItem key={index} value={branchItem.branch}>
+                                            {branchItem.branch} (Semester: {branchItem.semester})
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         )}
-                    </button>
-                </form>
-            </div>
+                        <TextField
+                            label="Roll Number"
+                            type="number"
+                            value={rollNum}
+                            onChange={(event) => setRollNum(event.target.value)}
+                            required
+                        />
+                        <TextField
+                            label="Password"
+                            type="password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                            autoComplete="new-password"
+                            required
+                        />
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            disabled={loader}
+                            sx={{ mt: 2, fontWeight: 600 }}
+                        >
+                            {loader ? <CircularProgress size={24} color="inherit" /> : 'Add'}
+                        </Button>
+                    </Box>
+                </Paper>
+            </Box>
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </>
     )

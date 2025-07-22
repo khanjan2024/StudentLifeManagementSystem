@@ -3,19 +3,18 @@ import SeeNotice from '../../components/SeeNotice';
 import Students from "../../assets/img1.png";
 import Classes from "../../assets/img2.png";
 import Teachers from "../../assets/img3.png";
-import Fees from "../../assets/img4.png";
 import styled from 'styled-components';
 import CountUp from 'react-countup';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getAllSclasses } from '../../redux/sclassRelated/sclassHandle';
+import { getAllBranches } from '../../redux/sclassRelated/sclassHandle';
 import { getAllStudents } from '../../redux/studentRelated/studentHandle';
 import { getAllTeachers } from '../../redux/teacherRelated/teacherHandle';
 
 const AdminHomePage = () => {
     const dispatch = useDispatch();
     const { studentsList } = useSelector((state) => state.student);
-    const { sclassesList } = useSelector((state) => state.sclass);
+    const { branchesList } = useSelector((state) => state.branch);
     const { teachersList } = useSelector((state) => state.teacher);
 
     const { currentUser } = useSelector(state => state.user)
@@ -24,12 +23,12 @@ const AdminHomePage = () => {
 
     useEffect(() => {
         dispatch(getAllStudents(adminID));
-        dispatch(getAllSclasses(adminID, "Sclass"));
+        dispatch(getAllBranches(adminID, "Branch"));
         dispatch(getAllTeachers(adminID));
     }, [adminID, dispatch]);
 
     const numberOfStudents = studentsList && studentsList.length;
-    const numberOfClasses = sclassesList && sclassesList.length;
+    const numberOfClasses = branchesList && branchesList.length;
     const numberOfTeachers = teachersList && teachersList.length;
 
     return (
@@ -62,14 +61,6 @@ const AdminHomePage = () => {
                             </Title>
                             <Data start={0} end={numberOfTeachers} duration={2.5} />
                         </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Fees} alt="Fees" />
-                            <Title>
-                                Fees Collection
-                            </Title>
-                            <Data start={0} end={23000} duration={2.5} prefix="$" />                        </StyledPaper>
                     </Grid>
                     <Grid item xs={12} md={12} lg={12}>
                         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>

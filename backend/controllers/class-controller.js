@@ -1,25 +1,27 @@
-const Sclass = require('../models/sclassSchema.js');
+const Branch = require('../models/sclassSchema.js');
 const Student = require('../models/studentSchema.js');
 const Subject = require('../models/subjectSchema.js');
 const Teacher = require('../models/teacherSchema.js');
 
-const sclassCreate = async (req, res) => {
+const branchCreate = async (req, res) => {
     try {
-        const sclass = new Sclass({
-            sclassName: req.body.sclassName,
+        const branch = new Branch({
+            branch: req.body.branch,
+            semester: req.body.semester,
             school: req.body.adminID
         });
 
-        const existingSclassByName = await Sclass.findOne({
-            sclassName: req.body.sclassName,
+        const existingBranch = await Branch.findOne({
+            branch: req.body.branch,
+            semester: req.body.semester,
             school: req.body.adminID
         });
 
-        if (existingSclassByName) {
-            res.send({ message: 'Sorry this class name already exists' });
+        if (existingBranch) {
+            res.send({ message: 'Sorry this branch and semester already exists' });
         }
         else {
-            const result = await sclass.save();
+            const result = await branch.save();
             res.send(result);
         }
     } catch (err) {
@@ -27,37 +29,37 @@ const sclassCreate = async (req, res) => {
     }
 };
 
-const sclassList = async (req, res) => {
+const branchList = async (req, res) => {
     try {
-        let sclasses = await Sclass.find({ school: req.params.id })
-        if (sclasses.length > 0) {
-            res.send(sclasses)
+        let branches = await Branch.find({ school: req.params.id })
+        if (branches.length > 0) {
+            res.send(branches)
         } else {
-            res.send({ message: "No sclasses found" });
+            res.send({ message: "No branches found" });
         }
     } catch (err) {
         res.status(500).json(err);
     }
 };
 
-const getSclassDetail = async (req, res) => {
+const getBranchDetail = async (req, res) => {
     try {
-        let sclass = await Sclass.findById(req.params.id);
-        if (sclass) {
-            sclass = await sclass.populate("school", "schoolName")
-            res.send(sclass);
+        let branch = await Branch.findById(req.params.id);
+        if (branch) {
+            branch = await branch.populate("school", "schoolName")
+            res.send(branch);
         }
         else {
-            res.send({ message: "No class found" });
+            res.send({ message: "No branch found" });
         }
     } catch (err) {
         res.status(500).json(err);
     }
 }
 
-const getSclassStudents = async (req, res) => {
+const getBranchStudents = async (req, res) => {
     try {
-        let students = await Student.find({ sclassName: req.params.id })
+        let students = await Student.find({ branch: req.params.id })
         if (students.length > 0) {
             let modifiedStudents = students.map((student) => {
                 return { ...student._doc, password: undefined };
@@ -71,35 +73,35 @@ const getSclassStudents = async (req, res) => {
     }
 }
 
-const deleteSclass = async (req, res) => {
+const deleteBranch = async (req, res) => {
     try {
-        const deletedClass = await Sclass.findByIdAndDelete(req.params.id);
-        if (!deletedClass) {
-            return res.send({ message: "Class not found" });
+        const deletedBranch = await Branch.findByIdAndDelete(req.params.id);
+        if (!deletedBranch) {
+            return res.send({ message: "Branch not found" });
         }
-        const deletedStudents = await Student.deleteMany({ sclassName: req.params.id });
-        const deletedSubjects = await Subject.deleteMany({ sclassName: req.params.id });
-        const deletedTeachers = await Teacher.deleteMany({ teachSclass: req.params.id });
-        res.send(deletedClass);
+        const deletedStudents = await Student.deleteMany({ branch: req.params.id });
+        const deletedSubjects = await Subject.deleteMany({ branch: req.params.id });
+        const deletedTeachers = await Teacher.deleteMany({ teachBranch: req.params.id });
+        res.send(deletedBranch);
     } catch (error) {
         res.status(500).json(error);
     }
 }
 
-const deleteSclasses = async (req, res) => {
+const deleteBranches = async (req, res) => {
     try {
-        const deletedClasses = await Sclass.deleteMany({ school: req.params.id });
-        if (deletedClasses.deletedCount === 0) {
-            return res.send({ message: "No classes found to delete" });
+        const deletedBranches = await Branch.deleteMany({ school: req.params.id });
+        if (deletedBranches.deletedCount === 0) {
+            return res.send({ message: "No branches found to delete" });
         }
         const deletedStudents = await Student.deleteMany({ school: req.params.id });
         const deletedSubjects = await Subject.deleteMany({ school: req.params.id });
         const deletedTeachers = await Teacher.deleteMany({ school: req.params.id });
-        res.send(deletedClasses);
+        res.send(deletedBranches);
     } catch (error) {
         res.status(500).json(error);
     }
 }
 
 
-module.exports = { sclassCreate, sclassList, deleteSclass, deleteSclasses, getSclassDetail, getSclassStudents };
+module.exports = { branchCreate, branchList, deleteBranch, deleteBranches, getBranchDetail, getBranchStudents };

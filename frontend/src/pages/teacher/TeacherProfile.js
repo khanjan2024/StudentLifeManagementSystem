@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
-import { Card, CardContent, Typography } from '@mui/material';
+import { Paper, Box, Typography, Avatar, Container, Grid } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 const TeacherProfile = () => {
@@ -9,39 +9,26 @@ const TeacherProfile = () => {
   if (response) { console.log(response) }
   else if (error) { console.log(error) }
 
-  const teachSclass = currentUser.teachSclass
+  const teachBranch = currentUser.teachBranch
   const teachSubject = currentUser.teachSubject
   const teachSchool = currentUser.school
 
   return (
-    <>
-      <ProfileCard>
-        <ProfileCardContent>
-          <ProfileText>Name: {currentUser.name}</ProfileText>
-          <ProfileText>Email: {currentUser.email}</ProfileText>
-          <ProfileText>Class: {teachSclass.sclassName}</ProfileText>
-          <ProfileText>Subject: {teachSubject.subName}</ProfileText>
-          <ProfileText>School: {teachSchool.schoolName}</ProfileText>
-        </ProfileCardContent>
-      </ProfileCard>
-    </>
+    <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, mb: 3 }}>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          <Avatar sx={{ width: 120, height: 120, mb: 2 }}>
+            {String(currentUser.name).charAt(0)}
+          </Avatar>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>{currentUser.name}</Typography>
+          <Typography variant="subtitle1">Email: {currentUser.email}</Typography>
+          <Typography variant="subtitle1">Branch/Department: {teachBranch?.branch}</Typography>
+          <Typography variant="subtitle1">Subject: {teachSubject.subName}</Typography>
+          <Typography variant="subtitle1">College: {teachSchool.schoolName}</Typography>
+        </Box>
+      </Paper>
+    </Container>
   )
 }
 
 export default TeacherProfile
-
-const ProfileCard = styled(Card)`
-  margin: 20px;
-  width: 400px;
-  border-radius: 10px;
-`;
-
-const ProfileCardContent = styled(CardContent)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const ProfileText = styled(Typography)`
-  margin: 10px;
-`;

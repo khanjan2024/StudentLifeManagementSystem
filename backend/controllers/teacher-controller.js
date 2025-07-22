@@ -3,12 +3,12 @@ const Teacher = require('../models/teacherSchema.js');
 const Subject = require('../models/subjectSchema.js');
 
 const teacherRegister = async (req, res) => {
-    const { name, email, password, role, school, teachSubject, teachSclass } = req.body;
+    const { name, email, password, role, school, teachSubject, teachBranch } = req.body;
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
 
-        const teacher = new Teacher({ name, email, password: hashedPass, role, school, teachSubject, teachSclass });
+        const teacher = new Teacher({ name, email, password: hashedPass, role, school, teachSubject, teachBranch });
 
         const existingTeacherByEmail = await Teacher.findOne({ email });
 
@@ -32,10 +32,36 @@ const teacherLogIn = async (req, res) => {
         if (teacher) {
             const validated = await bcrypt.compare(req.body.password, teacher.password);
             if (validated) {
+                // Populate teacher data with detailed information
                 teacher = await teacher.populate("teachSubject", "subName sessions")
                 teacher = await teacher.populate("school", "schoolName")
-                teacher = await teacher.populate("teachSclass", "sclassName")
+                teacher = await teacher.populate("teachBranch", "branch")
+                
+                // Check if teacher has required fields for assignment creation
+                const hasRequiredFields = teacher.teachSubject && teacher.teachBranch;
+                
+                // Add a warning message if teacher profile is incomplete
+                if (!hasRequiredFields) {
+                    teacher._doc.profileWarning = {
+                        message: "Your teacher profile is incomplete. Some features may be limited.",
+                        missingFields: {
+                            subject: !teacher.teachSubject,
+                            branch: !teacher.teachBranch
+                        }
+                    };
+                }
+                
+                // Remove password from response
                 teacher.password = undefined;
+                
+                // Log teacher data for debugging
+                console.log('Teacher login successful:', {
+                    id: teacher._id,
+                    name: teacher.name,
+                    hasSubject: !!teacher.teachSubject,
+                    hasBranch: !!teacher.teachBranch
+                });
+                
                 res.send(teacher);
             } else {
                 res.send({ message: "Invalid password" });
@@ -44,6 +70,7 @@ const teacherLogIn = async (req, res) => {
             res.send({ message: "Teacher not found" });
         }
     } catch (err) {
+        console.error('Teacher login error:', err);
         res.status(500).json(err);
     }
 };
@@ -52,7 +79,7 @@ const getTeachers = async (req, res) => {
     try {
         let teachers = await Teacher.find({ school: req.params.id })
             .populate("teachSubject", "subName")
-            .populate("teachSclass", "sclassName");
+            .populate("teachBranch", "branch");
         if (teachers.length > 0) {
             let modifiedTeachers = teachers.map((teacher) => {
                 return { ...teacher._doc, password: undefined };
@@ -71,7 +98,7 @@ const getTeacherDetail = async (req, res) => {
         let teacher = await Teacher.findById(req.params.id)
             .populate("teachSubject", "subName sessions")
             .populate("school", "schoolName")
-            .populate("teachSclass", "sclassName")
+            .populate("teachBranch", "branch semester")
         if (teacher) {
             teacher.password = undefined;
             res.send(teacher);
@@ -85,18 +112,36 @@ const getTeacherDetail = async (req, res) => {
 }
 
 const updateTeacherSubject = async (req, res) => {
-    const { teacherId, teachSubject } = req.body;
+    const { teacherId, teachSubject, teachBranch } = req.body;
     try {
+        // Create update object based on what was provided
+        const updateObj = {};
+        if (teachSubject) updateObj.teachSubject = teachSubject;
+        if (teachBranch) updateObj.teachBranch = teachBranch;
+        
+        // Update teacher with new subject and/or branch
         const updatedTeacher = await Teacher.findByIdAndUpdate(
             teacherId,
-            { teachSubject },
+            updateObj,
             { new: true }
-        );
+        ).populate("teachSubject", "subName sessions")
+         .populate("teachBranch", "branch");
 
-        await Subject.findByIdAndUpdate(teachSubject, { teacher: updatedTeacher._id });
+        // If subject was updated, update the subject record too
+        if (teachSubject) {
+            await Subject.findByIdAndUpdate(teachSubject, { teacher: updatedTeacher._id });
+        }
+
+        console.log('Teacher profile updated:', {
+            id: updatedTeacher._id,
+            name: updatedTeacher.name,
+            hasSubject: !!updatedTeacher.teachSubject,
+            hasBranch: !!updatedTeacher.teachBranch
+        });
 
         res.send(updatedTeacher);
     } catch (error) {
+        console.error('Error updating teacher profile:', error);
         res.status(500).json(error);
     }
 };
@@ -140,9 +185,9 @@ const deleteTeachers = async (req, res) => {
     }
 };
 
-const deleteTeachersByClass = async (req, res) => {
+const deleteTeachersByBranch = async (req, res) => {
     try {
-        const deletionResult = await Teacher.deleteMany({ sclassName: req.params.id });
+        const deletionResult = await Teacher.deleteMany({ branch: req.params.id });
 
         const deletedCount = deletionResult.deletedCount || 0;
 
@@ -151,7 +196,7 @@ const deleteTeachersByClass = async (req, res) => {
             return;
         }
 
-        const deletedTeachers = await Teacher.find({ sclassName: req.params.id });
+        const deletedTeachers = await Teacher.find({ branch: req.params.id });
 
         await Subject.updateMany(
             { teacher: { $in: deletedTeachers.map(teacher => teacher._id) }, teacher: { $exists: true } },
@@ -163,6 +208,8 @@ const deleteTeachersByClass = async (req, res) => {
         res.status(500).json(error);
     }
 };
+
+const deleteTeachersByClass = deleteTeachersByBranch;
 
 const teacherAttendance = async (req, res) => {
     const { status, date } = req.body;
@@ -200,6 +247,7 @@ module.exports = {
     updateTeacherSubject,
     deleteTeacher,
     deleteTeachers,
+    deleteTeachersByBranch,
     deleteTeachersByClass,
     teacherAttendance
 };

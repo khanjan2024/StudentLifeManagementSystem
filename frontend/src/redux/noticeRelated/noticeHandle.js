@@ -6,11 +6,13 @@ import {
     getError
 } from './noticeSlice';
 
-export const getAllNotices = (id, address) => async (dispatch) => {
+const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5000";
+
+export const getAllNotices = (id, address, params = {}) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${process.env.REACT_APP_BASE_URL}/${address}List/${id}`);
+        const result = await axios.get(`${REACT_APP_BASE_URL}/${address}List/${id}`, { params });
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {

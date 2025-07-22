@@ -7,19 +7,24 @@ import { Paper, Box, Typography, ButtonGroup, Button, Popper, Grow, ClickAwayLis
 import { BlackButton, BlueButton} from "../../components/buttonStyles";
 import TableTemplate from "../../components/TableTemplate";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import axios from 'axios';
 
-const TeacherClassDetails = () => {
+const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5000";
+
+const TeacherBranchDetails = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch();
-    const { sclassStudents, loading, error, getresponse } = useSelector((state) => state.sclass);
+    const { branchStudents, loading, error, getresponse } = useSelector((state) => state.branch);
 
     const { currentUser } = useSelector((state) => state.user);
-    const classID = currentUser.teachSclass?._id
-    const subjectID = currentUser.teachSubject?._id
+    const branchID = currentUser?.teachBranch?._id
+    const subjectID = currentUser?.teachSubject?._id
 
     useEffect(() => {
-        dispatch(getClassStudents(classID));
-    }, [dispatch, classID])
+        if (branchID) {
+            dispatch(getClassStudents(branchID));
+        }
+    }, [dispatch, branchID])
 
     if (error) {
         console.log(error)
@@ -30,7 +35,7 @@ const TeacherClassDetails = () => {
         { id: 'rollNum', label: 'Roll Number', minWidth: 100 },
     ]
 
-    const studentRows = sclassStudents.map((student) => {
+    const studentRows = branchStudents.map((student) => {
         return {
             name: student.name,
             rollNum: student.rollNum,
@@ -39,43 +44,18 @@ const TeacherClassDetails = () => {
     })
 
     const StudentsButtonHaver = ({ row }) => {
-        const options = ['Take Attendance', 'Provide Marks'];
-
-        const [open, setOpen] = React.useState(false);
-        const anchorRef = React.useRef(null);
-        const [selectedIndex, setSelectedIndex] = React.useState(0);
-
-        const handleClick = () => {
-            console.info(`You clicked ${options[selectedIndex]}`);
-            if (selectedIndex === 0) {
-                handleAttendance();
-            } else if (selectedIndex === 1) {
-                handleMarks();
+        // One-click attendance handler
+        const markAttendance = async (status) => {
+            try {
+                await axios.put(`${REACT_APP_BASE_URL}/StudentAttendance/${row.id}`, {
+                    subName: subjectID,
+                    status,
+                    date: new Date()
+                });
+                // Optionally show a success message or refresh data
+            } catch (err) {
+                // Optionally handle error
             }
-        };
-
-        const handleAttendance = () => {
-            navigate(`/Teacher/class/student/attendance/${row.id}/${subjectID}`)
-        }
-        const handleMarks = () => {
-            navigate(`/Teacher/class/student/marks/${row.id}/${subjectID}`)
-        };
-
-        const handleMenuItemClick = (event, index) => {
-            setSelectedIndex(index);
-            setOpen(false);
-        };
-
-        const handleToggle = () => {
-            setOpen((prevOpen) => !prevOpen);
-        };
-
-        const handleClose = (event) => {
-            if (anchorRef.current && anchorRef.current.contains(event.target)) {
-                return;
-            }
-
-            setOpen(false);
         };
         return (
             <>
@@ -87,58 +67,29 @@ const TeacherClassDetails = () => {
                 >
                     View
                 </BlueButton>
-                <React.Fragment>
-                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
-                        <Button onClick={handleClick}>{options[selectedIndex]}</Button>
-                        <BlackButton
-                            size="small"
-                            aria-controls={open ? 'split-button-menu' : undefined}
-                            aria-expanded={open ? 'true' : undefined}
-                            aria-label="select merge strategy"
-                            aria-haspopup="menu"
-                            onClick={handleToggle}
-                        >
-                            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                        </BlackButton>
-                    </ButtonGroup>
-                    <Popper
-                        sx={{
-                            zIndex: 1,
-                        }}
-                        open={open}
-                        anchorEl={anchorRef.current}
-                        role={undefined}
-                        transition
-                        disablePortal
-                    >
-                        {({ TransitionProps, placement }) => (
-                            <Grow
-                                {...TransitionProps}
-                                style={{
-                                    transformOrigin:
-                                        placement === 'bottom' ? 'center top' : 'center bottom',
-                                }}
-                            >
-                                <Paper>
-                                    <ClickAwayListener onClickAway={handleClose}>
-                                        <MenuList id="split-button-menu" autoFocusItem>
-                                            {options.map((option, index) => (
-                                                <MenuItem
-                                                    key={option}
-                                                    disabled={index === 2}
-                                                    selected={index === selectedIndex}
-                                                    onClick={(event) => handleMenuItemClick(event, index)}
-                                                >
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </MenuList>
-                                    </ClickAwayListener>
-                                </Paper>
-                            </Grow>
-                        )}
-                    </Popper>
-                </React.Fragment>
+                <Button
+                    color="success"
+                    variant="contained"
+                    sx={{ ml: 1 }}
+                    onClick={() => markAttendance("Present")}
+                >
+                    Present
+                </Button>
+                <Button
+                    color="error"
+                    variant="contained"
+                    sx={{ ml: 1 }}
+                    onClick={() => markAttendance("Absent")}
+                >
+                    Absent
+                </Button>
+                <BlueButton
+                    variant="contained"
+                    sx={{ ml: 1 }}
+                    onClick={() => navigate(`/Teacher/class/student/marks/${row.id}/${subjectID}`)}
+                >
+                    Provide Marks
+                </BlueButton>
             </>
         );
     };
@@ -150,7 +101,7 @@ const TeacherClassDetails = () => {
             ) : (
                 <>
                     <Typography variant="h4" align="center" gutterBottom>
-                        Class Details
+                        Branch/Department Details
                     </Typography>
                     {getresponse ? (
                         <>
@@ -164,7 +115,7 @@ const TeacherClassDetails = () => {
                                 Students List:
                             </Typography>
 
-                            {Array.isArray(sclassStudents) && sclassStudents.length > 0 &&
+                            {Array.isArray(branchStudents) && branchStudents.length > 0 &&
                                 <TableTemplate buttonHaver={StudentsButtonHaver} columns={studentColumns} rows={studentRows} />
                             }
                         </Paper>
@@ -175,4 +126,4 @@ const TeacherClassDetails = () => {
     );
 };
 
-export default TeacherClassDetails;
+export default TeacherBranchDetails;

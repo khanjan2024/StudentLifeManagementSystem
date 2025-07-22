@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom'
-import { getClassDetails, getClassStudents, getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
+import { getClassDetails, getClassStudents, getSubjectList, getBranchDetails, getBranchStudents } from "../../../redux/sclassRelated/sclassHandle";
 import { deleteUser } from '../../../redux/userRelated/userHandle';
 import {
-    Box, Container, Typography, Tab, IconButton
+    Box, Container, Typography, Tab, IconButton, Paper
 } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -18,20 +18,24 @@ import SpeedDialTemplate from "../../../components/SpeedDialTemplate";
 import Popup from "../../../components/Popup";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostAddIcon from '@mui/icons-material/PostAdd';
+import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
 
-const ClassDetails = () => {
+const BranchDetails = () => {
     const params = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch();
-    const { subjectsList, sclassStudents, sclassDetails, loading, error, response, getresponse } = useSelector((state) => state.sclass);
+    const { subjectsList, branchStudents, branchDetails, loading, error, response, getresponse } = useSelector((state) => state.branch);
+    const { teachersList } = useSelector((state) => state.teacher);
+    const { currentUser } = useSelector((state) => state.user);
 
-    const classID = params.id
+    const branchID = params.id
 
     useEffect(() => {
-        dispatch(getClassDetails(classID, "Sclass"));
-        dispatch(getSubjectList(classID, "ClassSubjects"))
-        dispatch(getClassStudents(classID));
-    }, [dispatch, classID])
+        dispatch(getClassDetails(branchID));
+        dispatch(getSubjectList(branchID, "BranchSubjects"))
+        dispatch(getClassStudents(branchID));
+        dispatch(getAllTeachers(currentUser._id));
+    }, [dispatch, branchID, currentUser._id])
 
     if (error) {
         console.log(error)
@@ -64,13 +68,13 @@ const ClassDetails = () => {
         { id: 'code', label: 'Subject Code', minWidth: 100 },
     ]
 
-    const subjectRows = subjectsList && subjectsList.length > 0 && subjectsList.map((subject) => {
+    const subjectRows = Array.isArray(subjectsList) ? subjectsList.map((subject) => {
         return {
             name: subject.subName,
             code: subject.subCode,
             id: subject._id,
         };
-    })
+    }) : [];
 
     const SubjectsButtonHaver = ({ row }) => {
         return (
@@ -81,7 +85,7 @@ const ClassDetails = () => {
                 <BlueButton
                     variant="contained"
                     onClick={() => {
-                        navigate(`/Admin/class/subject/${classID}/${row.id}`)
+                        navigate(`/Admin/class/subject/${branchID}/${row.id}`)
                     }}
                 >
                     View
@@ -93,22 +97,22 @@ const ClassDetails = () => {
     const subjectActions = [
         {
             icon: <PostAddIcon color="primary" />, name: 'Add New Subject',
-            action: () => navigate("/Admin/addsubject/" + classID)
+            action: () => navigate("/Admin/addsubject/" + branchID)
         },
         {
             icon: <DeleteIcon color="error" />, name: 'Delete All Subjects',
-            action: () => deleteHandler(classID, "SubjectsClass")
+            action: () => deleteHandler(branchID, "SubjectsClass")
         }
     ];
 
-    const ClassSubjectsSection = () => {
+    const BranchSubjectsSection = () => {
         return (
             <>
                 {response ?
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                         <GreenButton
                             variant="contained"
-                            onClick={() => navigate("/Admin/addsubject/" + classID)}
+                            onClick={() => navigate("/Admin/addsubject/" + branchID)}
                         >
                             Add Subjects
                         </GreenButton>
@@ -132,13 +136,13 @@ const ClassDetails = () => {
         { id: 'rollNum', label: 'Roll Number', minWidth: 100 },
     ]
 
-    const studentRows = sclassStudents.map((student) => {
+    const studentRows = Array.isArray(branchStudents) ? branchStudents.map((student) => {
         return {
             name: student.name,
             rollNum: student.rollNum,
             id: student._id,
         };
-    })
+    }) : [];
 
     const StudentsButtonHaver = ({ row }) => {
         return (
@@ -152,14 +156,7 @@ const ClassDetails = () => {
                 >
                     View
                 </BlueButton>
-                <PurpleButton
-                    variant="contained"
-                    onClick={() =>
-                        navigate("/Admin/students/student/attendance/" + row.id)
-                    }
-                >
-                    Attendance
-                </PurpleButton>
+                {/* Attendance button removed for admin */}
             </>
         );
     };
@@ -167,34 +164,42 @@ const ClassDetails = () => {
     const studentActions = [
         {
             icon: <PersonAddAlt1Icon color="primary" />, name: 'Add New Student',
-            action: () => navigate("/Admin/class/addstudents/" + classID)
+            action: () => navigate("/Admin/class/addstudents/" + branchID)
         },
         {
             icon: <PersonRemoveIcon color="error" />, name: 'Delete All Students',
-            action: () => deleteHandler(classID, "StudentsClass")
+            action: () => deleteHandler(branchID, "StudentsClass")
         },
     ];
 
-    const ClassStudentsSection = () => {
+    const BranchStudentsSection = () => {
         return (
             <>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                    <Typography variant="h5" gutterBottom>
+                        Students List ({studentRows.length})
+                    </Typography>
+                    <GreenButton
+                        variant="contained"
+                        startIcon={<PersonAddAlt1Icon />}
+                        onClick={() => navigate("/Admin/class/addstudents/" + branchID)}
+                        sx={{ minWidth: 150 }}
+                    >
+                        Add Student
+                    </GreenButton>
+                </Box>
+
                 {getresponse ? (
-                    <>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                            <GreenButton
-                                variant="contained"
-                                onClick={() => navigate("/Admin/class/addstudents/" + classID)}
-                            >
-                                Add Students
-                            </GreenButton>
-                        </Box>
-                    </>
+                    <Box sx={{ textAlign: 'center', py: 4, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                        <Typography variant="body1" color="text.secondary">
+                            No students enrolled in this class yet.
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                            Click "Add Student" to enroll students in this class.
+                        </Typography>
+                    </Box>
                 ) : (
                     <>
-                        <Typography variant="h5" gutterBottom>
-                            Students List:
-                        </Typography>
-
                         <TableTemplate buttonHaver={StudentsButtonHaver} columns={studentColumns} rows={studentRows} />
                         <SpeedDialTemplate actions={studentActions} />
                     </>
@@ -203,25 +208,96 @@ const ClassDetails = () => {
         )
     }
 
-    const ClassTeachersSection = () => {
+    const BranchTeachersSection = () => {
+        // Filter teachers for this branch
+        const branchTeachers = Array.isArray(teachersList)
+            ? teachersList.filter(teacher => teacher.teachBranch && teacher.teachBranch._id === branchID)
+            : [];
         return (
-            <>
-                Teachers
-            </>
+            <Box sx={{ py: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                    <Typography variant="h5" gutterBottom>
+                        Teachers ({branchTeachers.length})
+                    </Typography>
+                    <GreenButton
+                        variant="contained"
+                        onClick={() => navigate(`/Admin/teachers/chooseclass?branchId=${branchID}`)}
+                    >
+                        Add Teacher
+                    </GreenButton>
+                </Box>
+                
+                {branchTeachers.length > 0 ? (
+                    <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' } }}>
+                        {branchTeachers.map((teacher) => (
+                            <Box key={teacher._id} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, backgroundColor: '#f9f9f9' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                                    {teacher.name}
+                                </Typography>
+                                <Typography variant="body1" color="text.secondary">
+                                    Subject: {teacher.teachSubject?.subName || 'No subject assigned'}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                    Email: {teacher.email || 'Not provided'}
+                                </Typography>
+                            </Box>
+                        ))}
+                    </Box>
+                ) : (
+                    <Box sx={{ textAlign: 'center', py: 4, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                        <Typography variant="body1" color="text.secondary">
+                            No teachers assigned to this class/branch yet.
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                            Click "Add Teacher" to assign teachers to this class.
+                        </Typography>
+                    </Box>
+                )}
+            </Box>
         )
     }
 
-    const ClassDetailsSection = () => {
-        const numberOfSubjects = subjectsList.length;
-        const numberOfStudents = sclassStudents.length;
-
+    const BranchDetailsSection = () => {
+        // Show loading if subjectsList or branchStudents are not loaded yet
+        if (loading || !Array.isArray(subjectsList) || !Array.isArray(branchStudents)) {
+            return <Typography>Loading...</Typography>;
+        }
+        
+        // Only treat as error if getresponse is not "No students found"
+        if (getresponse && typeof getresponse === 'string' && getresponse !== 'No students found') {
+            return (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography variant="h4" align="center" gutterBottom color="error">
+                        Branch/Department Details
+                    </Typography>
+                    <Typography variant="h6" gutterBottom color="error">
+                        Error: {getresponse}
+                    </Typography>
+                    <Typography variant="body1" sx={{ mt: 2, color: 'text.secondary' }}>
+                        Please check if the branch ID is correct or contact your administrator.
+                    </Typography>
+                </Box>
+            );
+        }
+        
+        const numberOfSubjects = Array.isArray(subjectsList) ? subjectsList.length : 0;
+        const numberOfStudents = Array.isArray(branchStudents) ? branchStudents.length : 0;
+        // For teachers:
+        const branchTeachers = Array.isArray(teachersList)
+            ? teachersList.filter(teacher => teacher.teachBranch && teacher.teachBranch._id === branchID)
+            : [];
+        const numberOfTeachers = branchTeachers.length;
+        // Handle both array and object cases for branchDetails
+        const branch = Array.isArray(branchDetails) ? branchDetails[0] : branchDetails;
+        const branchName = branch && branch.branch ? branch.branch : 'Not set';
+        const semester = branch && branch.semester ? branch.semester : 'Not set';
         return (
             <>
                 <Typography variant="h4" align="center" gutterBottom>
-                    Class Details
+                    Branch/Department Details
                 </Typography>
                 <Typography variant="h5" gutterBottom>
-                    This is Class {sclassDetails && sclassDetails.sclassName}
+                    Branch/Department: {branchName} | Semester: {semester}
                 </Typography>
                 <Typography variant="h6" gutterBottom>
                     Number of Subjects: {numberOfSubjects}
@@ -229,10 +305,13 @@ const ClassDetails = () => {
                 <Typography variant="h6" gutterBottom>
                     Number of Students: {numberOfStudents}
                 </Typography>
+                <Typography variant="h6" gutterBottom>
+                    Number of Teachers: {numberOfTeachers}
+                </Typography>
                 {getresponse &&
                     <GreenButton
                         variant="contained"
-                        onClick={() => navigate("/Admin/class/addstudents/" + classID)}
+                        onClick={() => navigate("/Admin/branch/addstudents/" + branchID)}
                     >
                         Add Students
                     </GreenButton>
@@ -240,7 +319,7 @@ const ClassDetails = () => {
                 {response &&
                     <GreenButton
                         variant="contained"
-                        onClick={() => navigate("/Admin/addsubject/" + classID)}
+                        onClick={() => navigate("/Admin/addsubject/" + branchID)}
                     >
                         Add Subjects
                     </GreenButton>
@@ -252,40 +331,42 @@ const ClassDetails = () => {
     return (
         <>
             {loading ? (
-                <div>Loading...</div>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+                    <div>Loading...</div>
+                </Box>
             ) : (
-                <>
-                    <Box sx={{ width: '100%', typography: 'body1', }} >
+                <Paper sx={{ width: '100%', p: { xs: 2, sm: 4 }, borderRadius: 4, boxShadow: 3, mt: 2, mb: 2 }}>
+                    <Box sx={{ width: '100%', typography: 'body1' }}>
                         <TabContext value={value}>
-                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                <TabList onChange={handleChange} sx={{ position: 'fixed', width: '100%', bgcolor: 'background.paper', zIndex: 1 }}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper', position: 'sticky', top: 0, zIndex: 1 }}>
+                                <TabList onChange={handleChange}>
                                     <Tab label="Details" value="1" />
                                     <Tab label="Subjects" value="2" />
                                     <Tab label="Students" value="3" />
                                     <Tab label="Teachers" value="4" />
                                 </TabList>
                             </Box>
-                            <Container sx={{ marginTop: "3rem", marginBottom: "4rem" }}>
+                            <Container sx={{ marginTop: '2rem', marginBottom: '2rem' }}>
                                 <TabPanel value="1">
-                                    <ClassDetailsSection />
+                                    <BranchDetailsSection />
                                 </TabPanel>
                                 <TabPanel value="2">
-                                    <ClassSubjectsSection />
+                                    <BranchSubjectsSection />
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    <ClassStudentsSection />
+                                    <BranchStudentsSection />
                                 </TabPanel>
                                 <TabPanel value="4">
-                                    <ClassTeachersSection />
+                                    <BranchTeachersSection />
                                 </TabPanel>
                             </Container>
                         </TabContext>
                     </Box>
-                </>
+                </Paper>
             )}
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </>
     );
 };
 
-export default ClassDetails;
+export default BranchDetails;

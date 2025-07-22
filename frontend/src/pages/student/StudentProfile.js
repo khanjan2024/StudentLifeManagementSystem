@@ -9,13 +9,13 @@ const StudentProfile = () => {
   if (response) { console.log(response) }
   else if (error) { console.log(error) }
 
-  const sclassName = currentUser.sclassName
+  const branch = currentUser.branch
   const studentSchool = currentUser.school
 
   return (
     <>
-      <Container maxWidth="md">
-        <StyledPaper elevation={3}>
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Paper elevation={3} sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, mb: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center">
@@ -26,7 +26,7 @@ const StudentProfile = () => {
             </Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center">
-                <Typography variant="h5" component="h2" textAlign="center">
+                <Typography variant="h5" component="h2" textAlign="center" sx={{ fontWeight: 700 }}>
                   {currentUser.name}
                 </Typography>
               </Box>
@@ -41,58 +41,19 @@ const StudentProfile = () => {
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center">
                 <Typography variant="subtitle1" component="p" textAlign="center">
-                  Class: {sclassName.sclassName}
+                  Branch/Department: {branch?.branch} | Semester: {branch?.semester}
                 </Typography>
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center">
                 <Typography variant="subtitle1" component="p" textAlign="center">
-                  School: {studentSchool.schoolName}
+                  College: {studentSchool.schoolName}
                 </Typography>
               </Box>
             </Grid>
           </Grid>
-        </StyledPaper>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Personal Information
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Date of Birth:</strong> January 1, 2000
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Gender:</strong> Male
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Email:</strong> john.doe@example.com
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Phone:</strong> (123) 456-7890
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Address:</strong> 123 Main Street, City, Country
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Emergency Contact:</strong> (987) 654-3210
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+        </Paper>
       </Container>
     </>
   )

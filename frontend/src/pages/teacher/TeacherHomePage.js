@@ -14,17 +14,27 @@ const TeacherHomePage = () => {
     const dispatch = useDispatch();
 
     const { currentUser } = useSelector((state) => state.user);
-    const { subjectDetails, sclassStudents } = useSelector((state) => state.sclass);
+    const { subjectDetails, branchStudents } = useSelector((state) => state.branch || {});
 
-    const classID = currentUser.teachSclass?._id
-    const subjectID = currentUser.teachSubject?._id
+    const classID = currentUser?.teachBranch?._id
+    const subjectID = currentUser?.teachSubject?._id
 
     useEffect(() => {
-        dispatch(getSubjectDetails(subjectID, "Subject"));
-        dispatch(getClassStudents(classID));
+        console.log('TeacherHomePage - Current User:', currentUser);
+        console.log('TeacherHomePage - Class ID:', classID);
+        console.log('TeacherHomePage - Subject ID:', subjectID);
+        
+        if (subjectID && classID) {
+            dispatch(getSubjectDetails(subjectID, "Subject"));
+            dispatch(getClassStudents(classID));
+        }
     }, [dispatch, subjectID, classID]);
+    
+    useEffect(() => {
+        console.log('TeacherHomePage - Branch Students:', branchStudents);
+    }, [branchStudents]);
 
-    const numberOfStudents = sclassStudents && sclassStudents.length;
+    const numberOfStudents = branchStudents && branchStudents.length;
     const numberOfSessions = subjectDetails && subjectDetails.sessions
 
     return (
@@ -39,32 +49,6 @@ const TeacherHomePage = () => {
                             </Title>
                             <Data start={0} end={numberOfStudents} duration={2.5} />
                         </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Lessons} alt="Lessons" />
-                            <Title>
-                                Total Lessons
-                            </Title>
-                            <Data start={0} end={numberOfSessions} duration={5} />
-                        </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Tests} alt="Tests" />
-                            <Title>
-                                Tests Taken
-                            </Title>
-                            <Data start={0} end={24} duration={4} />
-                        </StyledPaper>
-                    </Grid>
-                    <Grid item xs={12} md={3} lg={3}>
-                        <StyledPaper>
-                            <img src={Time} alt="Time" />
-                            <Title>
-                                Total Hours
-                            </Title>
-                            <Data start={0} end={30} duration={4} suffix="hrs"/>                        </StyledPaper>
                     </Grid>
                     <Grid item xs={12}>
                         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>

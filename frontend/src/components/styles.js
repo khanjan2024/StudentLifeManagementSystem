@@ -33,14 +33,20 @@ export const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
     zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
+    background: theme.palette.background.paper,
+    color: theme.palette.text.primary,
+    boxShadow: '0 2px 12px rgba(80, 0, 128, 0.08)',
+    borderBottomLeftRadius: open ? 18 : 0,
+    borderBottomRightRadius: 18,
+    transition: theme.transitions.create(['width', 'margin', 'border-radius'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
     ...(open && {
         marginLeft: drawerWidth,
         width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
+        borderBottomLeftRadius: 0,
+        transition: theme.transitions.create(['width', 'margin', 'border-radius'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
@@ -53,6 +59,10 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
             position: 'relative',
             whiteSpace: 'nowrap',
             width: drawerWidth,
+            background: theme.palette.background.paper,
+            boxShadow: '2px 0 12px rgba(80, 0, 128, 0.06)',
+            borderTopRightRadius: 18,
+            borderBottomRightRadius: 18,
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.enteringScreen,
@@ -68,6 +78,8 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
                 [theme.breakpoints.up('sm')]: {
                     width: theme.spacing(9),
                 },
+                borderTopRightRadius: 18,
+                borderBottomRightRadius: 18,
             }),
         },
     }),

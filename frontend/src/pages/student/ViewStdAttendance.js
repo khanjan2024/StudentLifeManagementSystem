@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { BottomNavigation, BottomNavigationAction, Box, Button, Collapse, Paper, Table, TableBody, TableHead, Typography } from '@mui/material';
+import { Box, Button, Collapse, Paper, Table, TableBody, TableHead, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../../redux/userRelated/userHandle';
-import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../components/attendanceCalculator';
-
-import CustomBarChart from '../../components/CustomBarChart'
-
-import InsertChartIcon from '@mui/icons-material/InsertChart';
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
-import TableChartIcon from '@mui/icons-material/TableChart';
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
+import { calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../components/attendanceCalculator';
 import { StyledTableCell, StyledTableRow } from '../../components/styles';
 
 const ViewStdAttendance = () => {
@@ -35,8 +28,6 @@ const ViewStdAttendance = () => {
     else if (error) { console.log(error) }
 
     const [subjectAttendance, setSubjectAttendance] = useState([]);
-    const [selectedSection, setSelectedSection] = useState('table');
-
     useEffect(() => {
         if (userDetails) {
             setSubjectAttendance(userDetails.attendance || []);
@@ -45,21 +36,11 @@ const ViewStdAttendance = () => {
 
     const attendanceBySubject = groupAttendanceBySubject(subjectAttendance)
 
-    const overallAttendancePercentage = calculateOverallAttendancePercentage(subjectAttendance);
-
-    const subjectData = Object.entries(attendanceBySubject).map(([subName, { subCode, present, sessions }]) => {
-        const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
-        return {
-            subject: subName,
-            attendancePercentage: subjectAttendancePercentage,
-            totalClasses: sessions,
-            attendedClasses: present
-        };
-    });
-
-    const handleSectionChange = (event, newSection) => {
-        setSelectedSection(newSection);
-    };
+    // Calculate overall attendance percentage directly from attendance data
+    const totalPresent = subjectAttendance.filter(att => att.status === "Present").length;
+    const totalAbsent = subjectAttendance.filter(att => att.status === "Absent").length;
+    const totalAttendance = totalPresent + totalAbsent;
+    const overallAttendancePercentage = totalAttendance > 0 ? (totalPresent / totalAttendance) * 100 : 0;
 
     const renderTableSection = () => {
         return (
@@ -72,20 +53,22 @@ const ViewStdAttendance = () => {
                         <StyledTableRow>
                             <StyledTableCell>Subject</StyledTableCell>
                             <StyledTableCell>Present</StyledTableCell>
-                            <StyledTableCell>Total Sessions</StyledTableCell>
+                            <StyledTableCell>Absent</StyledTableCell>
                             <StyledTableCell>Attendance Percentage</StyledTableCell>
                             <StyledTableCell align="center">Actions</StyledTableCell>
                         </StyledTableRow>
                     </TableHead>
-                    {Object.entries(attendanceBySubject).map(([subName, { present, allData, subId, sessions }], index) => {
-                        const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
+                    {Object.entries(attendanceBySubject).map(([subName, { present, absent, allData, subId, sessions }], index) => {
+                        // Calculate attendance percentage based on actual present and absent counts
+                        const totalClasses = present + absent;
+                        const subjectAttendancePercentage = totalClasses > 0 ? ((present / totalClasses) * 100).toFixed(2) : 0;
 
                         return (
                             <TableBody key={index}>
                                 <StyledTableRow>
                                     <StyledTableCell>{subName}</StyledTableCell>
                                     <StyledTableCell>{present}</StyledTableCell>
-                                    <StyledTableCell>{sessions}</StyledTableCell>
+                                    <StyledTableCell>{absent}</StyledTableCell>
                                     <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
                                     <StyledTableCell align="center">
                                         <Button variant="contained"
@@ -95,7 +78,7 @@ const ViewStdAttendance = () => {
                                     </StyledTableCell>
                                 </StyledTableRow>
                                 <StyledTableRow>
-                                    <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                                    <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
                                         <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
                                             <Box sx={{ margin: 1 }}>
                                                 <Typography variant="h6" gutterBottom component="div">
@@ -132,58 +115,48 @@ const ViewStdAttendance = () => {
                     }
                     )}
                 </Table>
-                <div>
-                    Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%
-                </div>
+                <Box sx={{ mt: 3, p: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
+                    <Typography variant="h6" gutterBottom>Overall Attendance Summary</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, mb: 1 }}>
+                        <Box>
+                            <Typography variant="body2" color="text.secondary">Present</Typography>
+                            <Typography variant="h6" color="success.main">{totalPresent}</Typography>
+                        </Box>
+                        <Box>
+                            <Typography variant="body2" color="text.secondary">Absent</Typography>
+                            <Typography variant="h6" color="error.main">{totalAbsent}</Typography>
+                        </Box>
+                        <Box>
+                            <Typography variant="body2" color="text.secondary">Total Classes</Typography>
+                            <Typography variant="h6">{totalAttendance}</Typography>
+                        </Box>
+                        <Box>
+                            <Typography variant="body2" color="text.secondary">Attendance Percentage</Typography>
+                            <Typography variant="h6" color={overallAttendancePercentage >= 75 ? "success.main" : "warning.main"}>
+                                {overallAttendancePercentage.toFixed(2)}%
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Box>
             </>
         )
     }
 
-    const renderChartSection = () => {
-        return (
-            <>
-                <CustomBarChart chartData={subjectData} dataKey="attendancePercentage" />
-            </>
-        )
-    };
-
     return (
         <>
-            {loading
-                ? (
-                    <div>Loading...</div>
-                )
-                :
+            {loading ? (
+                <div>Loading...</div>
+            ) : (
                 <div>
-                    {subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0 ?
-                        <>
-                            {selectedSection === 'table' && renderTableSection()}
-                            {selectedSection === 'chart' && renderChartSection()}
-
-                            <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-                                <BottomNavigation value={selectedSection} onChange={handleSectionChange} showLabels>
-                                    <BottomNavigationAction
-                                        label="Table"
-                                        value="table"
-                                        icon={selectedSection === 'table' ? <TableChartIcon /> : <TableChartOutlinedIcon />}
-                                    />
-                                    <BottomNavigationAction
-                                        label="Chart"
-                                        value="chart"
-                                        icon={selectedSection === 'chart' ? <InsertChartIcon /> : <InsertChartOutlinedIcon />}
-                                    />
-                                </BottomNavigation>
-                            </Paper>
-                        </>
-                        :
-                        <>
-                            <Typography variant="h6" gutterBottom component="div">
-                                Currently You Have No Attendance Details
-                            </Typography>
-                        </>
-                    }
+                    {subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0 ? (
+                        renderTableSection()
+                    ) : (
+                        <Typography variant="h6" gutterBottom component="div">
+                            Currently You Have No Attendance Details
+                        </Typography>
+                    )}
                 </div>
-            }
+            )}
         </>
     )
 }

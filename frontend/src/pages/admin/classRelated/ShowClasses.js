@@ -4,7 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
-import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
+import { getAllBranches } from '../../../redux/sclassRelated/sclassHandle';
 import { BlueButton, GreenButton } from '../../../components/buttonStyles';
 import TableTemplate from '../../../components/TableTemplate';
 
@@ -15,18 +15,23 @@ import AddCardIcon from '@mui/icons-material/AddCard';
 import styled from 'styled-components';
 import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
 import Popup from '../../../components/Popup';
+import { Paper } from '@mui/material';
 
-const ShowClasses = () => {
+const ShowBranches = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
-  const { sclassesList, loading, error, getresponse } = useSelector((state) => state.sclass);
+  // Get all data from Redux
+  const { branchesList, loading, error, getresponse } = useSelector((state) => state.branch);
+  const { subjectsList } = useSelector((state) => state.branch);
+  const { teachersList } = useSelector((state) => state.teacher);
+  const { studentsList } = useSelector((state) => state.student);
   const { currentUser } = useSelector(state => state.user)
 
   const adminID = currentUser._id
 
   useEffect(() => {
-    dispatch(getAllSclasses(adminID, "Sclass"));
+    dispatch(getAllBranches(adminID, "Branch"));
   }, [adminID, dispatch]);
 
   if (error) {
@@ -37,31 +42,64 @@ const ShowClasses = () => {
   const [message, setMessage] = useState("");
 
   const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.")
-    setShowPopup(true)
-    // dispatch(deleteUser(deleteID, address))
-    //   .then(() => {
-    //     dispatch(getAllSclasses(adminID, "Sclass"));
-    //   })
+    // console.log(deleteID);
+    // console.log(address);
+    // setMessage("Sorry the delete function has been disabled for now.")
+    // setShowPopup(true)
+    dispatch(deleteUser(deleteID, address))
+      .then(() => {
+        dispatch(getAllBranches(adminID, "Branch"));
+      })
   }
 
-  const sclassColumns = [
-    { id: 'name', label: 'Class Name', minWidth: 170 },
+  const branchColumns = [
+    { id: 'branch', label: 'Branch/Department', minWidth: 120 },
+    { id: 'semester', label: 'Semester', minWidth: 100 },
   ]
 
-  const sclassRows = sclassesList && sclassesList.length > 0 && sclassesList.map((sclass) => {
+  const branchRows = branchesList && branchesList.length > 0 && branchesList.map((branch) => {
     return {
-      name: sclass.sclassName,
-      id: sclass._id,
+      branch: branch.branch,
+      semester: branch.semester,
+      id: branch._id,
     };
   })
 
-  const SclassButtonHaver = ({ row }) => {
+  // Helper to count items for a branch
+  const getCount = (list, branchId, field = 'branch') => {
+    if (!Array.isArray(list)) return 0;
+    return list.filter(item => {
+      if (!item[field]) return false;
+      if (typeof item[field] === 'object') {
+        return item[field]._id === branchId;
+      }
+      return item[field] === branchId;
+    }).length;
+  };
+
+  // Branch summary cards
+  const BranchSummary = ({ branch }) => {
+    const numSubjects = getCount(subjectsList, branch._id, 'branch');
+    const numStudents = getCount(studentsList, branch._id, 'branch');
+    const numTeachers = getCount(teachersList, branch._id, 'teachBranch');
+    return (
+      <Paper sx={{ p: 3, mb: 3, borderRadius: 3, boxShadow: 2 }}>
+        <Box>
+          <strong>Branch/Department Details</strong>
+        </Box>
+        <Box>Branch/Department: {branch.branch} | Semester: {branch.semester}</Box>
+        <Box>Number of Subjects: {numSubjects}</Box>
+        <Box>Number of Students: {numStudents}</Box>
+        <Box>Number of Teachers: {numTeachers}</Box>
+      </Paper>
+    );
+  };
+
+  const BranchButtonHaver = ({ row }) => {
     const actions = [
       { icon: <PostAddIcon />, name: 'Add Subjects', action: () => navigate("/Admin/addsubject/" + row.id) },
       { icon: <PersonAddAlt1Icon />, name: 'Add Student', action: () => navigate("/Admin/class/addstudents/" + row.id) },
+      { icon: <PersonAddAlt1Icon />, name: 'Add Teacher', action: () => navigate("/Admin/teachers/chooseclass?branchId=" + row.id) },
     ];
     return (
       <ButtonContainer>
@@ -133,34 +171,42 @@ const ShowClasses = () => {
 
   const actions = [
     {
-      icon: <AddCardIcon color="primary" />, name: 'Add New Class',
+      icon: <AddCardIcon color="primary" />, name: 'Add New Branch',
       action: () => navigate("/Admin/addclass")
     },
     {
-      icon: <DeleteIcon color="error" />, name: 'Delete All Classes',
-      action: () => deleteHandler(adminID, "Sclasses")
+      icon: <DeleteIcon color="error" />, name: 'Delete All Branches',
+      action: () => deleteHandler(adminID, "Branches")
     },
   ];
 
   return (
     <>
       {loading ?
-        <div>Loading...</div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+          <div>Loading...</div>
+        </Box>
         :
         <>
           {getresponse ?
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <GreenButton variant="contained" onClick={() => navigate("/Admin/addclass")}>
-                Add Class
-              </GreenButton>
+              <GreenButton variant="contained" onClick={() => navigate("/Admin/addclass")}>Add Class</GreenButton>
             </Box>
             :
             <>
-              {Array.isArray(sclassesList) && sclassesList.length > 0 &&
-                <TableTemplate buttonHaver={SclassButtonHaver} columns={sclassColumns} rows={sclassRows} />
-              }
-              <SpeedDialTemplate actions={actions} />
-            </>}
+              {/* Branch summary cards */}
+              <Paper sx={{ width: '100%', overflow: 'auto', p: { xs: 2, sm: 4 }, borderRadius: 4, boxShadow: 3, minHeight: 320 }}>
+                {Array.isArray(branchesList) && branchesList.length > 0 ? (
+                  <TableTemplate buttonHaver={BranchButtonHaver} columns={branchColumns} rows={branchRows} />
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+                    No branches found.
+                  </Box>
+                )}
+                <SpeedDialTemplate actions={actions} />
+              </Paper>
+            </>
+          }
         </>
       }
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
@@ -169,7 +215,7 @@ const ShowClasses = () => {
   );
 };
 
-export default ShowClasses;
+export default ShowBranches;
 
 const styles = {
   styledPaper: {

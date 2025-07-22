@@ -26,6 +26,24 @@ const StudentSideBar = () => {
                     </ListItemIcon>
                     <ListItemText primary="Subjects" />
                 </ListItemButton>
+                <ListItemButton component={Link} to="/Student/assignments">
+                    <ListItemIcon>
+                        <AssignmentIcon color={location.pathname.startsWith("/Student/assignments") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="Assignments" />
+                </ListItemButton>
+                <ListItemButton component={Link} to="/Student/timetable">
+                    <ListItemIcon>
+                        <ClassOutlinedIcon color={location.pathname.startsWith("/Student/timetable") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="Timetable" />
+                </ListItemButton>
+                <ListItemButton component={Link} to="/Student/queries">
+                    <ListItemIcon>
+                        <AnnouncementOutlinedIcon color={location.pathname.startsWith("/Student/queries") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="Queries" />
+                </ListItemButton>
                 <ListItemButton component={Link} to="/Student/attendance">
                     <ListItemIcon>
                         <ClassOutlinedIcon color={location.pathname.startsWith("/Student/attendance") ? 'primary' : 'inherit'} />

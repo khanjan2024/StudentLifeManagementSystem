@@ -25,6 +25,7 @@ mongoose
     .catch((err) => console.log("NOT CONNECTED TO NETWORK", err))
 
 app.use('/', Routes);
+app.use('/uploads/assignments', express.static('uploads/assignments'));
 
 app.listen(PORT, () => {
     console.log(`Server started at port no. ${PORT}`)

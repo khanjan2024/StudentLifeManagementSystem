@@ -14,12 +14,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../redux/userRelated/userHandle';
 import Popup from '../components/Popup';
 
-const ChooseUser = ({ visitor }) => {
+const ChooseUser = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const password = "zxc"
 
-  const { status, currentUser, currentRole } = useSelector(state => state.user);;
+  const { status, currentUser, currentRole } = useSelector(state => state.user);
 
   const [loader, setLoader] = useState(false)
   const [showPopup, setShowPopup] = useState(false);
@@ -27,40 +26,11 @@ const ChooseUser = ({ visitor }) => {
 
   const navigateHandler = (user) => {
     if (user === "Admin") {
-      if (visitor === "guest") {
-        const email = "yogendra@12"
-        const fields = { email, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Adminlogin');
-      }
-    }
-
-    else if (user === "Student") {
-      if (visitor === "guest") {
-        const rollNum = "1"
-        const studentName = "Dipesh Awasthi"
-        const fields = { rollNum, studentName, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Studentlogin');
-      }
-    }
-
-    else if (user === "Teacher") {
-      if (visitor === "guest") {
-        const email = "tony@12"
-        const fields = { email, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Teacherlogin');
-      }
+      navigate('/Adminlogin');
+    } else if (user === "Student") {
+      navigate('/Studentlogin');
+    } else if (user === "Teacher") {
+      navigate('/Teacherlogin');
     }
   }
 

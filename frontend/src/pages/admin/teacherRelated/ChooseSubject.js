@@ -16,7 +16,7 @@ const ChooseSubject = ({ situation }) => {
     const [teacherID, setTeacherID] = useState("");
     const [loader, setLoader] = useState(false)
 
-    const { subjectsList, loading, error, response } = useSelector((state) => state.sclass);
+    const { subjectsList, loading, error, response } = useSelector((state) => state.branch);
 
     useEffect(() => {
         if (situation === "Norm") {

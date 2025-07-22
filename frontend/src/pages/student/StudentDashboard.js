@@ -20,6 +20,9 @@ import StudentComplain from './StudentComplain';
 import Logout from '../Logout'
 import AccountMenu from '../../components/AccountMenu';
 import { AppBar, Drawer } from '../../components/styles';
+import StudentAssignments from './StudentAssignments';
+import StudentTimetable from './StudentTimetable';
+import StudentQueries from './StudentQueries';
 
 const StudentDashboard = () => {
     const [open, setOpen] = useState(true);
@@ -31,8 +34,11 @@ const StudentDashboard = () => {
         <>
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                <AppBar open={open} position='absolute'>
-                    <Toolbar sx={{ pr: '24px' }}>
+                <AppBar open={open} position='absolute' sx={{
+                    background: 'linear-gradient(90deg, #f4f6fa 60%, #e0e7ff 100%)',
+                    boxShadow: '0 2px 12px rgba(80, 0, 128, 0.08)',
+                }}>
+                    <Toolbar sx={{ pr: '24px', minHeight: { xs: 56, sm: 72 } }}>
                         <IconButton
                             edge="start"
                             color="inherit"
@@ -45,12 +51,16 @@ const StudentDashboard = () => {
                         >
                             <MenuIcon />
                         </IconButton>
+                        {/* Logo/avatar placeholder */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                            <Box sx={{ width: 36, height: 36, bgcolor: 'primary.main', borderRadius: '50%', mr: 1 }} />
+                        </Box>
                         <Typography
                             component="h1"
-                            variant="h6"
-                            color="inherit"
+                            variant="h4"
+                            color="primary.main"
                             noWrap
-                            sx={{ flexGrow: 1 }}
+                            sx={{ flexGrow: 1, fontWeight: 700 }}
                         >
                             Student Dashboard
                         </Typography>
@@ -68,7 +78,7 @@ const StudentDashboard = () => {
                         <StudentSideBar />
                     </List>
                 </Drawer>
-                <Box component="main" sx={styles.boxStyled}>
+                <Box component="main" sx={{ ...styles.boxStyled, p: { xs: 2, sm: 4 } }}>
                     <Toolbar />
                     <Routes>
                         <Route path="/" element={<StudentHomePage />} />
@@ -79,6 +89,9 @@ const StudentDashboard = () => {
                         <Route path="/Student/subjects" element={<StudentSubjects />} />
                         <Route path="/Student/attendance" element={<ViewStdAttendance />} />
                         <Route path="/Student/complain" element={<StudentComplain />} />
+                        <Route path="/Student/assignments" element={<StudentAssignments />} />
+                        <Route path="/Student/timetable" element={<StudentTimetable />} />
+                        <Route path="/Student/queries" element={<StudentQueries />} />
 
                         <Route path="/logout" element={<Logout />} />
                     </Routes>

@@ -17,6 +17,12 @@ const noticeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin'
     },
+    targetRole: {
+        type: String,
+        enum: ['All', 'Student', 'Teacher'],
+        default: 'All',
+        required: true
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("notice", noticeSchema)
