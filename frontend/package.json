@@ -27,7 +27,13 @@
     "build": "react-scripts build",
     "build:netlify": "CI=false react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:api": "node scripts/test-api-connection.js",
+    "test:api:dev": "node scripts/test-api-connection.js dev",
+    "test:api:prod": "node scripts/test-api-connection.js prod",
+    "verify:prod-api": "node scripts/verify-production-api.js",
+    "ci:test-api": "node scripts/ci-api-tests.js",
+    "ci:test-api:skip-failures": "node scripts/ci-api-tests.js prod --skip-on-failure"
   },
   "eslintConfig": {
     "extends": [

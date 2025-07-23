@@ -7,7 +7,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build": "npm i",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check-env": "node scripts/check-env.js",
+    "prestart": "node scripts/check-env.js"
   },
   "author": "",
   "license": "ISC",

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
     getRequest,
     getSuccess,
@@ -7,21 +6,26 @@ import {
     postDone,
     doneSuccess
 } from './teacherSlice';
-
-const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5000";
+import { 
+    getAllTeachers as fetchAllTeachers,
+    getTeacherDetails as fetchTeacherDetails,
+    updateTeacherSubject
+} from '../../api/teacherApi';
+import { handleApiError } from '../../utils/errorHandler';
 
 export const getAllTeachers = (id) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${REACT_APP_BASE_URL}/Teachers/${id}`);
+        const result = await fetchAllTeachers(id);
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
             dispatch(getSuccess(result.data));
         }
     } catch (error) {
-        dispatch(getError(error));
+        const errorInfo = handleApiError(error, 'Failed to fetch teachers.');
+        dispatch(getError(errorInfo));
     }
 }
 
@@ -29,12 +33,13 @@ export const getTeacherDetails = (id) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${REACT_APP_BASE_URL}/Teacher/${id}`);
+        const result = await fetchTeacherDetails(id);
         if (result.data) {
             dispatch(doneSuccess(result.data));
         }
     } catch (error) {
-        dispatch(getError(error));
+        const errorInfo = handleApiError(error, 'Failed to fetch teacher details.');
+        dispatch(getError(errorInfo));
     }
 }
 
@@ -42,11 +47,10 @@ export const updateTeachSubject = (teacherId, teachSubject) => async (dispatch) 
     dispatch(getRequest());
 
     try {
-        await axios.put(`${REACT_APP_BASE_URL}/TeacherSubject`, { teacherId, teachSubject }, {
-            headers: { 'Content-Type': 'application/json' },
-        });
+        await updateTeacherSubject(teacherId, teachSubject);
         dispatch(postDone());
     } catch (error) {
-        dispatch(getError(error));
+        const errorInfo = handleApiError(error, 'Failed to update teacher subject.');
+        dispatch(getError(errorInfo));
     }
 }

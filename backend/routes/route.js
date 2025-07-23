@@ -1,5 +1,6 @@
 const router = require('express').Router();
 
+const { getHealthStatus, getDatabaseStatus } = require('../controllers/health-controller.js');
 const { adminRegister, adminLogIn, getAdminDetail} = require('../controllers/admin-controller.js');
 
 const { branchCreate, branchList, deleteBranch, deleteBranches, getBranchDetail, getBranchStudents } = require('../controllers/class-controller.js');
@@ -141,6 +142,8 @@ router.get('/Timetables', getTimetables);
 router.put('/Timetable/:id', updateTimetable);
 router.delete('/Timetable/:id', deleteTimetable);
 
-
+// Health Check
+router.get('/health', getHealthStatus);
+router.get('/health/database', getDatabaseStatus);
 
 module.exports = router;

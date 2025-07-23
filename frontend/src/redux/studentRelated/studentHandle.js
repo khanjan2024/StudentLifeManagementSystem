@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
     getRequest,
     getSuccess,
@@ -6,21 +5,26 @@ import {
     getError,
     stuffDone
 } from './studentSlice';
-
-const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5000";
+import { 
+    getAllStudents as fetchAllStudents,
+    updateStudentAttendance,
+    updateStudentMarks
+} from '../../api/studentApi';
+import { handleApiError } from '../../utils/errorHandler';
 
 export const getAllStudents = (id) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.get(`${REACT_APP_BASE_URL}/Students/${id}`);
+        const result = await fetchAllStudents(id);
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
             dispatch(getSuccess(result.data));
         }
     } catch (error) {
-        dispatch(getError(error));
+        const errorInfo = handleApiError(error, 'Failed to fetch students.');
+        dispatch(getError(errorInfo));
     }
 }
 
@@ -28,16 +32,15 @@ export const updateStudentFields = (id, fields, address) => async (dispatch) => 
     dispatch(getRequest());
 
     try {
-        const result = await axios.put(`${REACT_APP_BASE_URL}/${address}/${id}`, fields, {
-            headers: { 'Content-Type': 'application/json' },
-        });
+        const result = await updateStudentAttendance(fields, id, address);
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
             dispatch(stuffDone());
         }
     } catch (error) {
-        dispatch(getError(error));
+        const errorInfo = handleApiError(error, 'Failed to update student fields.');
+        dispatch(getError(errorInfo));
     }
 }
 
@@ -45,13 +48,14 @@ export const removeStuff = (id, address) => async (dispatch) => {
     dispatch(getRequest());
 
     try {
-        const result = await axios.put(`${REACT_APP_BASE_URL}/${address}/${id}`);
+        const result = await updateStudentMarks(id, address);
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
             dispatch(stuffDone());
         }
     } catch (error) {
-        dispatch(getError(error));
+        const errorInfo = handleApiError(error, 'Failed to remove student data.');
+        dispatch(getError(errorInfo));
     }
 }

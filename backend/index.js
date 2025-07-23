@@ -8,19 +8,51 @@ const path = require("path")
 const app = express()
 const Routes = require("./routes/route.js")
 const logger = require("./utils/logger")
+const dbConnection = require("./utils/dbConnection")
 
 // Load environment variables
 dotenv.config();
 
-// Validate required environment variables
-const requiredEnvVars = ['MONGO_URL', 'JWT_SECRET'];
-const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+// Import environment validator
+const envValidator = require('./utils/envValidator');
 
-if (missingEnvVars.length > 0) {
-    logger.error('Missing required environment variables:', { missingVars: missingEnvVars });
-    logger.error('Please check your .env file or environment configuration.');
-    process.exit(1);
-}
+// Define environment variables configuration
+const envConfig = {
+    // Required variables
+    MONGO_URL: {
+        required: true,
+        description: 'MongoDB connection string'
+    },
+    JWT_SECRET: {
+        required: true,
+        description: 'Secret key for JWT token generation and verification'
+    },
+    // Optional variables with defaults
+    PORT: {
+        required: false,
+        default: 5000,
+        description: 'Port for the server to listen on',
+        validate: envValidator.isValidPort,
+        errorMessage: 'PORT must be a valid port number between 0 and 65535'
+    },
+    NODE_ENV: {
+        required: false,
+        default: 'development',
+        description: 'Application environment (development, production)',
+        validate: (value) => ['development', 'production', 'test'].includes(value),
+        errorMessage: 'NODE_ENV must be one of: development, production, test'
+    },
+    ALLOWED_ORIGINS: {
+        required: false,
+        description: 'Comma-separated list of allowed origins for CORS in production',
+        validate: envValidator.areValidUrls,
+        errorMessage: 'ALLOWED_ORIGINS must be a comma-separated list of valid URLs'
+    }
+};
+
+// Validate environment variables and handle any errors
+const validationResult = envValidator.validateEnvVars(envConfig);
+envValidator.handleValidationErrors(validationResult, true);
 
 const PORT = process.env.PORT || 5000
 
@@ -85,21 +117,50 @@ try {
     logger.error('Error creating upload directories:', { error: err.message });
 }
 
-mongoose
-    .connect(process.env.MONGO_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => logger.info("Connected to MongoDB"))
-    .catch((err) => logger.error("Database connection failed", { error: err.message }))
+// Connect to the database using the enhanced connection utility
+dbConnection.connectToDatabase(process.env.MONGO_URL)
+    .catch(err => {
+        // If connection fails after all retries, log a critical error
+        logger.error("All database connection attempts failed. The application will continue to run, but database functionality will be unavailable.", {
+            error: err.message
+        });
+    });
 
+// Import database middleware
+const dbMiddleware = require('./utils/dbMiddleware');
+
+// Apply database middleware to all routes except health checks
+app.use(/^(?!\/health).+/, dbMiddleware.requireDatabaseConnection);
+
+// Set up routes
 app.use('/', Routes);
 app.use('/uploads/assignments', express.static('uploads/assignments'));
 
-app.listen(PORT, () => {
+// Start the server and handle any errors
+const server = app.listen(PORT, () => {
     logger.info(`Server started successfully`, { 
         port: PORT, 
         environment: process.env.NODE_ENV || 'development',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        baseUrl: `http://localhost:${PORT}`
     });
-})
+    
+    // Log available routes for debugging
+    logger.info('Available API routes:');
+    app._router.stack
+        .filter(r => r.route)
+        .map(r => {
+            const methods = Object.keys(r.route.methods).join(', ').toUpperCase();
+            logger.info(`${methods} ${r.route.path}`);
+        });
+});
+
+// Handle server errors
+server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+        logger.error(`Port ${PORT} is already in use. Please choose a different port or stop the process using this port.`);
+    } else {
+        logger.error('Server error:', { error: error.message, stack: error.stack });
+    }
+    process.exit(1);
+});
