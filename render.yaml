@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: student-life-management-system-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URL
+        sync: false
+    healthCheckPath: /
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/backend/uploads
+      sizeGB: 1

@@ -378,15 +378,33 @@ git add .
 git commit -m "Initial commit"
 ```
 
-### Step 5: Link to Your GitHub Repository
+### Step 5: Create Your Own Repository
 
-Replace `yourusername` and `your-repository-name` with your actual GitHub username and repository name:
+Since you're getting a permission error (403) when trying to push to Yogndrr's repository, you need to create your own repository:
+
+1. Go to [GitHub](https://github.com/) and sign in with your account (khanjan2024)
+2. Click the "+" icon in the top-right corner and select "New repository"
+3. Enter a repository name (e.g., "College-Management-System")
+4. Add a description (optional)
+5. Choose "Public" or "Private" visibility
+6. Click "Create repository"
+
+### Step 6: Update Remote URL
+
+You need to change the remote URL to point to your own repository:
 
 ```bash
-git remote add origin https://github.com/yourusername/your-repository-name.git
+# First, check current remote
+git remote -v
+
+# Remove the existing remote
+git remote remove origin
+
+# Add your own repository as the remote
+git remote add origin https://github.com/khanjan2024/College-Management-System.git
 ```
 
-### Step 6: Push to GitHub
+### Step 7: Push to GitHub
 
 ```bash
 git push -u origin main
@@ -398,12 +416,22 @@ If you're using an older version of Git that uses "master" as the default branch
 git push -u origin master
 ```
 
-If you encounter an error, try:
+If you encounter an error about the branch, try:
 
 ```bash
 git branch -M main
 git push -u origin main
 ```
+
+### Alternative: Use GitHub Desktop
+
+If you're having trouble with command line Git:
+
+1. Download and install [GitHub Desktop](https://desktop.github.com/)
+2. Open GitHub Desktop and sign in with your GitHub account
+3. Add your local repository (File > Add local repository)
+4. Publish your repository to GitHub
+5. Follow the prompts to complete the process
 
 ### Step 7: Verify Your Repository
 
