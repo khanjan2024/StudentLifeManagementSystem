@@ -15,6 +15,9 @@ const StudentComplaintList = () => {
       dispatch(getStudentComplains(currentUser.school._id, currentUser._id));
     }
   }, [currentUser, dispatch]);
+  
+  // Filter out any items that are not complaints (e.g., queries)
+  const complaints = complainsList?.filter(item => item.type !== 'query') || [];
 
   if (error) {
     console.log(error);
@@ -37,7 +40,7 @@ const StudentComplaintList = () => {
         </Box>
       ) : (
         <>
-          {!complainsList || complainsList.length === 0 ? (
+          {!complaints || complaints.length === 0 ? (
             <Paper sx={{ p: 4, textAlign: 'center' }}>
               <Typography variant="h6" color="text.secondary">
                 No complaints found
@@ -48,7 +51,7 @@ const StudentComplaintList = () => {
             </Paper>
           ) : (
             <Grid container spacing={3}>
-              {complainsList.map((complaint) => (
+              {complaints.map((complaint) => (
                 <Grid item xs={12} md={6} lg={4} key={complaint._id}>
                   <Card 
                     sx={{ 

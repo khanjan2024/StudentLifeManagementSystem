@@ -34,6 +34,12 @@ const timetableSchema = new mongoose.Schema({
         default: 'class',
         required: true
     },
+    date: {
+        type: Date,
+        required: function() {
+            return this.type === 'exam';
+        }
+    },
     description: {
         type: String
     },

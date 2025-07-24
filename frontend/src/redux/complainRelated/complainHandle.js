@@ -31,9 +31,11 @@ export const getStudentComplains = (schoolId, studentId) => async (dispatch) => 
         if (result.data.message) {
             dispatch(getFailed(result.data.message));
         } else {
-            // Filter complaints for the specific student
+            // Filter complaints for the specific student and only include items of type 'complaint' (not 'query')
             const studentComplaints = result.data.filter(complaint => 
-                complaint.user && complaint.user._id === studentId
+                complaint.user && 
+                complaint.user._id === studentId && 
+                (complaint.type === 'complaint' || complaint.type === undefined) // Include undefined for backward compatibility
             );
             dispatch(getSuccess(studentComplaints));
         }

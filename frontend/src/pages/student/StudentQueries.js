@@ -22,8 +22,11 @@ const StudentQueries = () => {
         setError(null);
         try {
             const res = await axios.get(`${REACT_APP_BASE_URL}/ComplainList/${currentUser?.school?._id}`);
-            // Only show queries by this student
-            setQueries((res.data || []).filter(q => q.user?._id === currentUser?._id));
+            // Only show queries (not complaints) by this student
+            setQueries((res.data || []).filter(q => 
+                q.user?._id === currentUser?._id && 
+                q.type === 'query'
+            ));
         } catch (err) {
             setError('Failed to fetch queries');
         }

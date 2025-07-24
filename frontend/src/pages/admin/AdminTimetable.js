@@ -26,6 +26,7 @@ const AdminTimetable = () => {
         startTime: '',
         endTime: '',
         type: 'class',
+        date: '',
         description: '',
     });
     const [editId, setEditId] = useState(null);
@@ -56,6 +57,13 @@ const AdminTimetable = () => {
         e.preventDefault();
         if (!form.branch || !form.subject || !form.teacher || !form.day || !form.startTime || !form.endTime) {
             setMessage('All fields except description are required');
+            setShowPopup(true);
+            return;
+        }
+
+        // Validate date for exams
+        if (form.type === 'exam' && !form.date) {
+            setMessage('Date is required for exam entries');
             setShowPopup(true);
             return;
         }
@@ -97,7 +105,7 @@ const AdminTimetable = () => {
             setMessage('Timetable created successfully!');
         }
         setShowPopup(true);
-        setForm({ branch: '', subject: '', teacher: '', day: '', startTime: '', endTime: '', type: 'class', description: '' });
+        setForm({ branch: '', subject: '', teacher: '', day: '', startTime: '', endTime: '', type: 'class', date: '', description: '' });
         setEditId(null);
     };
 
@@ -110,6 +118,7 @@ const AdminTimetable = () => {
             startTime: entry.startTime || '',
             endTime: entry.endTime || '',
             type: entry.type || 'class',
+            date: entry.date ? new Date(entry.date).toISOString().split('T')[0] : '',
             description: entry.description || '',
         });
         setEditId(entry._id);
@@ -177,7 +186,21 @@ const AdminTimetable = () => {
                             <MenuItem value="exam">Exam</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    {form.type === 'exam' && (
+                        <Grid item xs={12} sm={2}>
+                            <TextField 
+                                label="Exam Date" 
+                                name="date" 
+                                type="date" 
+                                value={form.date} 
+                                onChange={handleChange} 
+                                fullWidth 
+                                required={form.type === 'exam'}
+                                InputLabelProps={{ shrink: true }} 
+                            />
+                        </Grid>
+                    )}
+                    <Grid item xs={12} sm={form.type === 'exam' ? 2 : 3}>
                         <TextField label="Description" name="description" value={form.description} onChange={handleChange} fullWidth />
                     </Grid>
                     <Grid item xs={6} sm={1}>
@@ -190,7 +213,7 @@ const AdminTimetable = () => {
                                 color="secondary" 
                                 fullWidth 
                                 onClick={() => {
-                                    setForm({ branch: '', subject: '', teacher: '', day: '', startTime: '', endTime: '', type: 'class', description: '' });
+                                    setForm({ branch: '', subject: '', teacher: '', day: '', startTime: '', endTime: '', type: 'class', date: '', description: '' });
                                     setEditId(null);
                                 }}
                                 sx={{ fontWeight: 600 }}
@@ -220,6 +243,11 @@ const AdminTimetable = () => {
                                                             <Box>
                                                                 <Typography variant="body2">{entry.subject?.subName} ({entry.type})</Typography>
                                                                 <Typography variant="body2">{entry.startTime} - {entry.endTime}</Typography>
+                                                                {entry.type === 'exam' && entry.date && (
+                                                                    <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+                                                                        Date: {new Date(entry.date).toLocaleDateString()}
+                                                                    </Typography>
+                                                                )}
                                                                 <Typography variant="body2">Teacher: {entry.teacher?.name}</Typography>
                                                                 {entry.description && <Typography variant="caption">{entry.description}</Typography>}
                                                             </Box>
