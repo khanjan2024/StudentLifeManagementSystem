@@ -132,8 +132,8 @@ dbConnection.connectToDatabase(process.env.MONGO_URL)
 // Import database middleware
 const dbMiddleware = require('./utils/dbMiddleware');
 
-// Apply database middleware to all routes except health checks
-app.use(/^(?!\/health).+/, dbMiddleware.requireDatabaseConnection);
+// Apply database middleware to all routes except health checks and root path
+app.use(/^(?!\/health$|\/$).+/, dbMiddleware.requireDatabaseConnection);
 
 // Set up routes
 app.use('/', Routes);
