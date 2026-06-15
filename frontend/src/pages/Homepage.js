@@ -22,7 +22,7 @@ const Homepage = () => {
                     <Grid item xs={12} md={6}>
                         <Paper elevation={6} sx={{ p: { xs: 3, sm: 5 }, borderRadius: 4, bgcolor: 'background.paper' }}>
                             <Typography variant="h2" sx={{ fontWeight: 700, color: 'primary.main', mb: 2, fontSize: { xs: '2rem', sm: '2.8rem' }, lineHeight: 1.2 }}>
-                                Welcome to<br />College Management<br />System
+                                Welcome to<br />Student Life Management<br />System
                             </Typography>
                             <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: { xs: '1rem', sm: '1.15rem' }, mb: 3 }}>
                                 Manage attendance, assignments, feedback, and communication from one place. A smart solution for students, teachers, and administrators.
