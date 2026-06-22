@@ -69,7 +69,7 @@ if (process.env.NODE_ENV === 'production') {
     // In production, only allow specific origins
     const allowedOrigins = process.env.ALLOWED_ORIGINS ? 
         process.env.ALLOWED_ORIGINS.split(',') : 
-        ['https://student-life-management-system.onrender.com'];
+        ['https://studentlifemanagementsystem.netlify.app', 'https://student-life-management-system.onrender.com'];
     
     app.use(cors({
         origin: function(origin, callback) {
